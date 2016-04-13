@@ -1,0 +1,15 @@
+{
+    "name": "MagnesiumOxide/TwitchApi",
+    "description": "A wrapper built on top of the v3 Twitch API.",
+    "minimum-stability": "dev",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "MagnesiumOxide",
+            "email": "magnesium38@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "6.2.0"
+    }
+}
