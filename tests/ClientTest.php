@@ -289,5 +289,4 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function testGetTopVideos() {}
     //public function testGetChannelVideos() {}
     public function testGetFollowedVideos() {}
-
 }
