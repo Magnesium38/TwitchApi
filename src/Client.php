@@ -2,26 +2,30 @@
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException;
+use MagnesiumOxide\TwitchApi\Exception\NotAuthenticatedException;
 
+/**
+ * A wrapper on for the Twitch.tv API.
+ * @package MagnesiumOxide\TwitchApi
+ */
 class Client {
-    CONST BASE_URL = "https://api.twitch.tv/kraken/";
+    /** @const The current base url that all requests will use */
+    CONST BASE_URL = "https://api.twitch.tv/kraken";
+    /** @const The API version used is denoted with the Accept header so it will be attached to all requests. */
     CONST ACCEPT_HEADER = "application/vnd.twitchtv.v3+json";
+    /** @var ClientInterface The client that will be used to make the requests. */
     protected $client;
+    /** @var ConfigRepository A clean wrapper around the configuration file. */
     protected $config;
+    /** @var null|string The access token for returned by the API once authenticated, null otherwise. */
     protected $token = null;
+    /** @var array List of the scopes that have been granted. */
     protected $scope = [];
+    /** @var array List of links that have been returned by the API. Considering hardcoding it.*/
     protected $links = [];
+    /** @var null|string The authenticated user's username on Twitch, null otherwise. */
     protected $username = null;
-
-    /*
-     * Links should end up with the following.
-     *  /user
-     *  /channel
-     *  /search
-     *  /streams
-     *  /ingests
-     *  /teams
-     */
 
     public function __construct(ConfigRepository $config, ClientInterface $client) {
         $this->config = $config ? $config : new ConfigRepository();
@@ -30,14 +34,31 @@ class Client {
         $this->updateLinks();
     }
 
+    /** @return array */
     public function getLinks() {
         return $this->links;
     }
 
+    /** @return ConfigRepository */
     public function getConfig() {
         return $this->config;
     }
 
+    /** @return null|string */
+    public function getUsername() {
+        return $this->username;
+    }
+
+    /**  @return array */
+    public function getScope() {
+        return $this->scope;
+    }
+
+    /**
+     * Get the URL to send direct a user at to authenticate.
+     *
+     * @return string
+     */
     public function getAuthenticationUrl() {
         $params = [
             "response_type" => "code",
@@ -61,25 +82,37 @@ class Client {
 
         $response = $this->post(Client::BASE_URL . "oauth2/token", $params);
         if (isset($response->error)) {
-            throw new \Exception; // REVISE THIS. Probably create an exception class.
+            throw new \Exception; // REVISE THIS. Test what errors could be given.
         }
-        $this->token = $response->access_token;
-        $this->scope = $response->scope;
+        $this->token = $response["access_token"];
+        $this->scope = $response["scope"];
 
         $response = $this->get(Client::BASE_URL);
+
         $this->links = $response["_links"];
         $this->username = $response["token"]["user_name"];
     }
 
+    /**
+     * A clean shorthand to throw an exception when there is no authenticated user.
+     *
+     * @throws NotAuthenticatedException
+     */
     protected function requireAuthentication() {
         if ($this->token === null) {
-            throw new \Exception; // REVISE THIS. Create an exception to better show the issue.
+            throw new NotAuthenticatedException();
         }
     }
 
+    /**
+     * A clean shorthand to throw an exception when the required scope isn't available to the application.
+     *
+     * @param string $scope
+     * @throws InsufficientScopeException
+     */
     protected function requireScope($scope) {
         if (!in_array($scope, $this->scope)) {
-            throw new \Exception; // REVISE THIS. Create an exception class that'll reflect better.
+            throw InsufficientScopeException::createException($scope);
         }
     }
 
@@ -296,7 +329,11 @@ class Client {
         return $this->get(Client::BASE_URL . "/chat/emoticon_images");
     }
 
-    public function getFollowers($user, $limit = 25, $offset = 0, $direction = "desc", $sort = "created_at") {
+    public function getChannelsFollowers() {
+        throw new \Exception("Not yet implemented.");
+    }
+
+    public function getUsersFollowers($user, $limit = 25, $offset = 0, $direction = "desc", $sort = "created_at") {
         if ($direction != "desc" && $direction != "asc") {
             throw new \InvalidArgumentException("Direction must be either 'asc' or 'desc'.");
         }
@@ -384,7 +421,7 @@ class Client {
     }
 
     public function updateLinks() {
-        $this->links = $this->getRoot()->_links;
+        $this->links = $this->getRoot()["_links"];
     }
 
     public function searchChannels($query, $limit = 25, $offset = 0) {
@@ -558,6 +595,13 @@ class Client {
         return $this->get(Client::BASE_URL . "/videos/" . $id);
     }
 
+    /**
+     * @param int $limit
+     * @param int $offset
+     * @param null $game
+     * @param string $period
+     * @return array
+     */
     public function getTopVideos($limit = 10, $offset = 0, $game = null, $period = "week") {
         if ($limit > 100) {
             throw new \InvalidArgumentException("Limit cannot be greater than 100.");
@@ -579,6 +623,12 @@ class Client {
         return $this->get(Client::BASE_URL . "/videos/top", $query);
     }
 
+    /**
+     * @param $uri
+     * @param array $query
+     * @param array $options
+     * @return array
+     */
     private function get($uri, $query = [], $options = []) {
         if (!empty($query)) {
             if (isset($options["query"])) {
@@ -591,14 +641,12 @@ class Client {
         return $this->request('GET', $uri, $options);
     }
 
-    /*private function head($uri, $query = [], $options = []) {
-        if (!empty($query)) {
-            $options["query"] = $query + $options["query"];
-        }
-
-        return $this->request('HEAD', $uri, $options);
-    }*/
-
+    /**
+     * @param $uri
+     * @param array $parameters
+     * @param array $options
+     * @return array
+     */
     private function put($uri, $parameters = [], $options = []) {
         if (!empty($parameters)) {
             if (isset($options["form_params"])) {
@@ -611,6 +659,12 @@ class Client {
         return $this->request('PUT', $uri, $options);
     }
 
+    /**
+     * @param $uri
+     * @param array $parameters
+     * @param array $options
+     * @return array
+     */
     private function post($uri, $parameters = [], $options = []) {
         if (!empty($parameters)) {
             if (isset($options["form_params"])) {
@@ -623,14 +677,20 @@ class Client {
         return $this->request('POST', $uri, $options);
     }
 
-    /*private function patch($uri, $parameters = [], $options = []) {
-        return $this->request('PATCH', $uri, $options);
-    }*/
-
+    /**
+     * @param $uri
+     * @return array
+     */
     private function delete($uri) {
         return $this->request('DELETE', $uri, []);
     }
 
+    /**
+     * @param $method
+     * @param $uri
+     * @param $options
+     * @return array
+     */
     private function request($method, $uri, $options) {
         // Make sure to add the Accept header to every request since it has the API version on it.
         // If Accept already exists, trust the user with what they want there.
@@ -648,9 +708,9 @@ class Client {
 
         try {
             $response = $this->client->request($method, $uri, $options);
-            $result = json_decode($response->getBody());
+            $result = json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            $result = json_decode($e->getResponse()->getBody());
+            $result = json_decode($e->getResponse()->getBody(), true);
         }
 
         return $result;
