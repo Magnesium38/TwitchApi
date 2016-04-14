@@ -9,7 +9,16 @@
             "email": "magnesium38@gmail.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "MagnesiumOxide\\TwitchApi\\": "src"
+        }
+    },
     "require": {
-        "guzzlehttp/guzzle": "6.2.0"
+        "php": ">=5.5.9",
+        "guzzlehttp/guzzle": "~6.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.2"
     }
 }

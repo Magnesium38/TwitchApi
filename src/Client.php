@@ -5,6 +5,7 @@ use GuzzleHttp\Exception\RequestException;
 
 class Client {
     CONST BASE_URL = "https://api.twitch.tv/kraken/";
+    CONST ACCEPT_HEADER = "application/vnd.twitchtv.v3+json";
     protected $client;
     protected $config;
     protected $token = null;
@@ -27,6 +28,14 @@ class Client {
         $this->client = $client;
 
         $this->updateLinks();
+    }
+
+    public function getLinks() {
+        return $this->links;
+    }
+
+    public function getConfig() {
+        return $this->config;
     }
 
     public function getAuthenticationUrl() {
@@ -55,7 +64,7 @@ class Client {
             throw new \Exception; // REVISE THIS. Probably create an exception class.
         }
         $this->token = $response->access_token;
-        $this->scope = explode(" ", $response->scope);
+        $this->scope = $response->scope;
 
         $response = $this->get(Client::BASE_URL);
         $this->links = $response["_links"];
@@ -375,7 +384,7 @@ class Client {
     }
 
     public function updateLinks() {
-        $this->links = $this->getRoot()["_links"];
+        $this->links = $this->getRoot()->_links;
     }
 
     public function searchChannels($query, $limit = 25, $offset = 0) {
@@ -572,7 +581,11 @@ class Client {
 
     private function get($uri, $query = [], $options = []) {
         if (!empty($query)) {
-            $options["query"] = $query + $options["query"];
+            if (isset($options["query"])) {
+                $options["query"] = $query + $options["query"];
+            } else {
+                $options["query"] = $query;
+            }
         }
 
         return $this->request('GET', $uri, $options);
@@ -588,7 +601,11 @@ class Client {
 
     private function put($uri, $parameters = [], $options = []) {
         if (!empty($parameters)) {
-            $options["form_params"] = $parameters + $options["form_params"];
+            if (isset($options["form_params"])) {
+                $options["form_params"] = $parameters + $options["form_params"];
+            } else {
+                $options["form_params"] = $parameters;
+            }
         }
 
         return $this->request('PUT', $uri, $options);
@@ -596,7 +613,11 @@ class Client {
 
     private function post($uri, $parameters = [], $options = []) {
         if (!empty($parameters)) {
-            $options["form_params"] = $parameters + $options["form_params"];
+            if (isset($options["form_params"])) {
+                $options["form_params"] = $parameters + $options["form_params"];
+            } else {
+                $options["form_params"] = $parameters;
+            }
         }
 
         return $this->request('POST', $uri, $options);
@@ -611,15 +632,19 @@ class Client {
     }
 
     private function request($method, $uri, $options) {
+        // Make sure to add the Accept header to every request since it has the API version on it.
+        // If Accept already exists, trust the user with what they want there.
+        if (isset($options["headers"])) {
+            $options["headers"] = $options["headers"] + ["Accept" => Client::ACCEPT_HEADER];
+        } else {
+            $options["headers"] = ["Accept" => Client::ACCEPT_HEADER];
+        }
+
         // If the user is authenticated, there is no harm in also sending the authorisation code.
         // I think.
         if ($this->token !== null) {
             $options["headers"] = $options["headers"] + ["Authorization" => "OAuth " . $this->token];
         }
-
-        // Make sure to add the Accept header to every request since it has the API version on it.
-        // If Accept already exists, trust the user with what they want there.
-        $options["headers"] = $options["headers"] + ["Accept" => "application/vnd.twitchtv.v3+json"];
 
         try {
             $response = $this->client->request($method, $uri, $options);
