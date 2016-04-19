@@ -210,9 +210,9 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     //public function testRequireScope() {}
 
     // Blocks Routes
-    public function testGetBlockedUsers() {}
-    public function testBlockUser() {}
-    public function testUnblockUser() {}
+    public function testGetBlockedUsers() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testBlockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testUnblockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Channels Routes
     public function testGetChannel() {
@@ -241,84 +241,71 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals("http://www.twitch.tv/test_channel", $result["url"]);
     }
-    public function testGetAuthenticatedChannel() {}
-    public function testGetChannelVideos() {}
-    public function testGetChannelFollowers() {}
-    public function testGetEditors() {}
-    public function testUpdateChannel() {}
-    public function testResetStreamKey() {}
-    public function testRunCommercial() {}
-    public function testGetTeamsFor() {}
+    public function testGetAuthenticatedChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetChannelVideos() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetChannelFollowers() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetEditors() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testUpdateChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testResetStreamKey() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testRunCommercial() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetTeamsFor() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Channel Feed Routes
-    public function testGetChannelPosts() {}
-    public function testPostToFeed() {}
-    public function testGetPost() {}
-    public function testDeletePost() {}
-    public function testReactToPost() {}
-    public function testDeleteReactionToPost() {}
+    public function testGetChannelPosts() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testPostToFeed() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetPost() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testDeletePost() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testReactToPost() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testDeleteReactionToPost() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Chat Routes
-    public function testGetChatEndpoints() {}
-    public function testGetBadges() {}
-    public function testGetAllEmoticons() {}
-    public function testGetEmoticonImages() {}
+    public function testGetChatEndpoints() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetBadges() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetAllEmoticons() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetEmoticonImages() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Follows Routes
-    //public function testGetChannelsFollowers() {}
-    public function testGetUsersFollowers() {}
-    public function testDoesUserFollowChannel() {}
-    public function testFollowChannel() {}
-    public function testUnfollowChannel() {}
-    public function testGetFollowedStreams() {}
+    public function testGetUsersFollowers() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testDoesUserFollowChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testFollowChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testUnfollowChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetFollowedStreams() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Games Routes
-    public function testGetTopGames() {}
+    public function testGetTopGames() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Ingests Routes
-    public function testGetIngests() {}
+    public function testGetIngests() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Root Routes
-    public function testGetRoot() {}
+    public function testGetRoot() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Search Routes
-    public function testSearchChannels() {}
-    public function testSearchStreams() {}
-    public function testSearchGames() {}
+    public function testSearchChannels() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testSearchStreams() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testSearchGames() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Streams Routes
-    public function testGetLiveChannel() {}
-    public function testGetStreams() {}
-    public function testGetFeaturedStreams() {}
-    public function testGetStreamSummary() {}
-    //public function testGetFollowedStreams() {}
+    public function testGetLiveChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetStreams() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetFeaturedStreams() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetStreamSummary() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Subscriptions Routes
-    public function testGetSubscribers() {}
-    public function testIsSubscribed() {}
-    public function testGetSubscribedChannel() {}
+    public function testGetSubscribers() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testIsSubscribed() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetSubscribedChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Teams Routes
-    public function testGetTeams() {}
-    public function testGetTeamInfo() {}
+    public function testGetTeams() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetTeamInfo() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Users Routes
-    public function testGetUser() {}
-    public function testGetAuthenticatedUser() {}
-    //public function testGetFollowedStreams() {}
-    //public function testGetFollowedVideos() {}
+    public function testGetUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetAuthenticatedUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
     // Videos Routes
-    public function testGetVideo() {}
-    public function testGetTopVideos() {}
-    //public function testGetChannelVideos() {}
-    public function testGetFollowedVideos() {}
-
-    // Request Methods
-    //   These are tested through the actual api.
-    // public function testDelete() {}
-    // public function testGet() {}
-    // public function testPost() {}
-    // public function testPut() {}
-    // public function testAddHeaders() {}
+    public function testGetVideo() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetTopVideos() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetFollowedVideos() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 }
