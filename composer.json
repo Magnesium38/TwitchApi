@@ -1,5 +1,5 @@
 {
-    "name": "MagnesiumOxide/TwitchApi",
+    "name": "magnesiumoxide/twitchapi",
     "description": "A wrapper built on top of the v3 Twitch API.",
     "minimum-stability": "dev",
     "license": "proprietary",

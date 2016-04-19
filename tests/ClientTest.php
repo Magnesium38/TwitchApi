@@ -1,159 +1,213 @@
 <?php
 
-use GuzzleHttp\Client;
+use MagnesiumOxide\TwitchApi\Scope;
 use MagnesiumOxide\TwitchApi\Client as Api;
 use MagnesiumOxide\TwitchApi\ConfigRepository;
-use Psr\Http\Message\ResponseInterface;
+use MagnesiumOxide\TwitchApi\RequestClient;
 use Prophecy\Argument;
 
 class ClientTest extends PHPUnit_Framework_TestCase {
     private $client;
-    private $response;
-    private $config;
     private $username = "TestUser";
     private $token = "TestUserAuthToken";
 
     public function setUp() {
-        $this->client = $this->prophesize(Client::class);
-        $this->response = $this->prophesize(ResponseInterface::class);
-        $this->config = $this->prophesize(ConfigRepository::class);
+        $this->client = $this->prophesize(RequestClient::class);
     }
 
-    private function mockConfig(array $scopes) {
-        $this->config->offsetExists(Argument::any())
+    private function getBaseLinks() {
+        return [
+                "_links" => [
+                        "user" => "https://api.twitch.tv/kraken/user",
+                        "channel" => "https://api.twitch.tv/kraken/channel",
+                        "search" => "https://api.twitch.tv/kraken/search",
+                        "streams" => "https://api.twitch.tv/kraken/streams",
+                        "ingests" => "https://api.twitch.tv/kraken/ingests",
+                        "teams" => "https://api.twitch.tv/kraken/teams",
+                ],
+                "token" => [
+                        "valid" => false,
+                        "authorization" => null,
+                ]
+        ];
+    }
+
+    private function mockConfig(array $config = []) {
+        $mockedConfig = $this->prophesize(ConfigRepository::class);
+        $mockedConfig->offsetExists(Argument::any())
             ->will(function ($arg) {
                 if ($arg == "ClientId") return true;
                 if ($arg == "ClientSecret") return true;
-                if ($arg == "RedirectUrl") return true;
+                if ($arg == "RedirectUri") return true;
                 if ($arg == "State") return true;
                 if ($arg == "Scope") return true;
                 return false;
             });
 
-        $this->config->offsetGet(Argument::any())
-            ->will(function ($args) use ($scopes) {
+        $mockedConfig->offsetGet(Argument::any())
+            ->will(function ($args) use ($config) {
                 $arg = $args[0];
-                if ($arg == "ClientId") return "YOUR_CLIENT_ID";
-                if ($arg == "ClientSecret") return "YOUR_CLIENT_SECRET";
-                if ($arg == "RedirectUrl") return "YOUR_REDIRECT_URI";
-                if ($arg == "State") return "YOUR_STATE";
-                if ($arg == "Scope") return $scopes;
+                if ($arg == "ClientId") {
+                    if (isset($config["ClientId"])) {
+                        return $config["ClientId"];
+                    } else {
+                        return "YOUR_CLIENT_ID";
+                    }
+                }
+                if ($arg == "ClientSecret") {
+                    if (isset($config["ClientSecret"])) {
+                        return $config["ClientSecret"];
+                    } else {
+                        return "YOUR_CLIENT_SECRET";
+                    }
+                }
+                if ($arg == "RedirectUri") {
+                    if (isset($config["RedirectUri"])) {
+                        return $config["RedirectUri"];
+                    } else {
+                        return "YOUR_REDIRECT_URI";
+                    }
+                }
+                if ($arg == "State") {
+                    if (isset($config["State"])) {
+                        return $config["State"];
+                    } else {
+                        return "YOUR_STATE";
+                    }
+                }
+                if ($arg == "Scope") {
+                    if (isset($config["scopes"])) {
+                        return $config["scopes"];
+                    } else {
+                        return [];
+                    }
+                }
                 return null;
             });
+
+        return $mockedConfig;
     }
 
-    private function getApi() {
-        $response = '{"_links":{"user":"https://api.twitch.tv/kraken/user",'
-                . '"channel":"https://api.twitch.tv/kraken/channel",'
-                . '"search":"https://api.twitch.tv/kraken/search",'
-                . '"streams":"https://api.twitch.tv/kraken/streams",'
-                . '"ingests":"https://api.twitch.tv/kraken/ingests",'
-                . '"teams":"https://api.twitch.tv/kraken/teams"},'
-                . '"token":{"valid":false,"authorization":null}}';
-
-        $this->requestShouldBeMade("GET", Api::BASE_URL, null, $response);
-        return new Api($this->config->reveal(), $this->client->reveal());
+    private function getApi(array $config = []) {
+        $mockedConfig = $this->mockConfig($config);
+        return new Api($this->client->reveal(), $mockedConfig->reveal());
     }
 
     private function requestShouldBeMade($method, $uri, $params, $response, $authenticated = false) {
-        if ($params !== null) {
-            $params = $params + ["headers" => ["Accept" => Api::ACCEPT_HEADER]];
-        } else {
-            $params = ["headers" => ["Accept" => Api::ACCEPT_HEADER]];
+        $headers = ["Accept" => Api::ACCEPT_HEADER];
+        if ($authenticated) {
+            $headers["Authorization"] = "OAuth " . $this->token;
         }
 
-        if ($authenticated === true) {
-            $params["headers"] = $params["headers"] + ["Authorization" => "OAuth " . $this->token];
+        if ($method == "DELETE") {
+            $this->client->delete($uri, $params, $headers)
+                    ->shouldBeCalled()
+                    ->willReturn($response);
+        } else if ($method == "GET") {
+            $this->client->get($uri, $params, $headers)
+                    ->shouldBeCalled()
+                    ->willReturn($response, $headers);
+        } else if ($method == "POST") {
+            $this->client->post($uri, $params, $headers)
+                    ->shouldBeCalled()
+                    ->willReturn($response);
+        } else if ($method == "PUT") {
+            $this->client->put($uri, $params, $headers)
+                    ->shouldBeCalled()
+                    ->willReturn($response);
         }
-
-        $mockedResponse = $this->prophesize(ResponseInterface::class);
-        $mockedResponse->getBody()
-            ->shouldBeCalled()
-            ->willReturn($response);
-
-        $this->client->request($method, $uri, $params)
-            ->shouldbeCalled()
-            ->willReturn($mockedResponse);
     }
 
-    public function authenticate(Api $api, array $scopes) {
+    private function authenticate(Api $api, array $scopes) {
         $this->mockConfig($scopes);
-
         $code = "ThisIsTheBestAuthenticationCode";
-        $response = '{"access_token":"' . $this->token . '",'
-            .'"scope":["' . implode(",", $scopes) . '"]}';
-
+        $response = ["access_token" => $this->token, "scope" => implode(",", $scopes)];
         $params = [
-            "form_params" => [
-                "client_id" => $api->getConfig()["ClientId"],
-                "client_secret" => $api->getConfig()["client_secret"],
-                "grant_type" => "authorization_code",
-                "redirect_uri" => $api->getConfig()["redirect_uri"],
-                "code" => $code,
-                "state" => $api->getConfig()["state"],
+            "client_id" => $api->getConfig()["ClientId"],
+            "client_secret" => $api->getConfig()["ClientSecret"],
+            "grant_type" => "authorization_code",
+            "redirect_uri" => $api->getConfig()["RedirectUri"],
+            "code" => $code,
+            "state" => $api->getConfig()["State"],
+        ];
+
+        $this->requestShouldBeMade("POST", Api::BASE_URL . "/oauth2/token", $params, $response);
+
+        $response2 = [
+            "token" => [
+                "authorization" => [
+                    "scopes" => implode(",", $scopes),
+                    "created_at" => "2012-05-08T21:55:12Z",
+                    "updated_at" => "2012-05-17T21:32:13Z",
+                ],
+                "user_name" => $this->username,
+                "valid" => "true",
             ],
         ];
 
-        $this->requestShouldBeMade("POST", Api::BASE_URL . "oauth2/token", $params, $response);
-
-        $response2 = '{"token":{"authorization":{'
-            . '"scopes":["' . implode('","', $scopes) . '"],'
-            . '"created_at":"2012-05-08T21:55:12Z","updated_at":"2012-05-17T21:32:13Z"},'
-            . '"user_name":"test_user1","valid":true},'
-            . '"_links":{"channel":"https://api.twitch.tv/kraken/channel",'
-            . '"users":"https://api.twitch.tv/kraken/users/'. $this->username .'",'
-            . '"user":"https://api.twitch.tv/kraken/user",'
-            . '"channels":"https://api.twitch.tv/kraken/channels/'. $this->username .'",'
-            . '"chat":"https://api.twitch.tv/kraken/chat/'. $this->username .'",'
-            . '"streams":"https://api.twitch.tv/kraken/streams",'
-            . '"ingests":"https://api.twitch.tv/kraken/ingests",'
-            . '"teams":"https://api.twitch.tv/kraken/teams",'
-            . '"search":"https://api.twitch.tv/kraken/search"}}';
-
-        $this->requestShouldBeMade("GET", Api::BASE_URL, null, $response2, true);
+        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response2, true);
 
         $api->authenticate($code);
     }
 
     public function testConstructor() {
-        $response = '{"_links":{"user":"https://api.twitch.tv/kraken/user",'
-            . '"channel":"https://api.twitch.tv/kraken/channel",'
-            . '"search":"https://api.twitch.tv/kraken/search",'
-            . '"streams":"https://api.twitch.tv/kraken/streams",'
-            . '"ingests":"https://api.twitch.tv/kraken/ingests",'
-            . '"teams":"https://api.twitch.tv/kraken/teams"},'
-            . '"token":{"valid":false,"authorization":null}}';
+        $response = $this->getBaseLinks();
+        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response, true);
 
-        $links = [
-                "user" => "https://api.twitch.tv/kraken/user",
-                "channel" => "https://api.twitch.tv/kraken/channel",
-                "search" => "https://api.twitch.tv/kraken/search",
-                "streams" => "https://api.twitch.tv/kraken/streams",
-                "ingests" => "https://api.twitch.tv/kraken/ingests",
-                "teams" => "https://api.twitch.tv/kraken/teams",
-        ];
-
-        $this->requestShouldBeMade("GET", Api::BASE_URL, null, $response);
-
-        $api = new Api($this->config->reveal(), $this->client->reveal());
-        $this->assertEquals($links, $api->getLinks());
+        $api = new Api($this->client->reveal(), $this->prophesize(ConfigRepository::class)->reveal());
+        $this->assertNull($api->getUsername());
 
         $this->authenticate($api, []);
+        $this->assertEquals($this->username, $api->getUsername());
+    }
 
-        $links = [
-            "channel" => "https://api.twitch.tv/kraken/channel",
-            "users" => "https://api.twitch.tv/kraken/users/". $this->username,
-            "user" => "https://api.twitch.tv/kraken/user",
-            "channels" => "https://api.twitch.tv/kraken/channels/". $this->username,
-            "chat" => "https://api.twitch.tv/kraken/chat/". $this->username,
-            "streams" => "https://api.twitch.tv/kraken/streams",
-            "ingests" => "https://api.twitch.tv/kraken/ingests",
-            "teams" => "https://api.twitch.tv/kraken/teams",
-            "search" => "https://api.twitch.tv/kraken/search",
+    // Misc methods
+    /*public function testBuildUri() {
+        $expected = "https://api.twitch.tv/kraken/test/channel";
+        $params = [
+                "channel" => "chan",
+                "test" => "hi",
         ];
 
-        $this->assertEquals($links, $api->getLinks());
+        $this->assertEquals($expected, Api::buildUri("/test/channel"));
+        $this->assertEquals($expected, Api::buildUri("/test/channel", []));
+        $this->assertEquals($expected, Api::buildUri("/test/channel", $params));
+        $this->assertNotEquals($expected, Api::buildUri("/test/:channel", $params));
+        $this->assertEquals("https://api.twitch.tv/kraken/test/chan", Api::buildUri("/test/:channel", $params));
+        $this->assertEquals("https://api.twitch.tv/kraken/hi/chan", Api::buildUri("/:test/:channel", $params));
+        $this->assertEquals("https://api.twitch.tv/kraken/hi/channel", Api::buildUri("/:test/channel", $params));
+    }*/
+    public function testGetAuthenticationUrl() {
+        $config = [
+            "ClientId" => "MyClientId",
+            "ClientSecret" => "MyClientSecret",
+            "RedirectUri" => "MyRedirectUri",
+            "State" => "MyState",
+            "scopes" => [
+                Scope::EditFeed,
+                Scope::ReadFeed,
+            ],
+        ];
+
+        $api = $this->getApi($config);
+
+        $authUrl = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=MyClientId&"
+                . "redirect_uri=MyRedirectUri&scope=channel_feed_edit%2Bchannel_feed_read&state=MyState";
+        $this->assertEquals($authUrl, $api->getAuthenticationUrl());
+
+        $api = $this->getApi();
+
+        $authUrl = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=code&client_id=YOUR_CLIENT_ID&"
+                . "redirect_uri=YOUR_REDIRECT_URI&scope=&state=YOUR_STATE";
+        $this->assertEquals($authUrl, $api->getAuthenticationUrl());
     }
+    public function testAuthenticate() {
+        $this->authenticate($this->getApi(), [Scope::ChatLogin, Scope::ReadSubscribers]);
+    }
+
+    // Require methods
+    //public function testRequireAuthentication() {}
+    //public function testRequireScope() {}
 
     // Blocks Routes
     public function testGetBlockedUsers() {}
@@ -162,64 +216,34 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
     // Channels Routes
     public function testGetChannel() {
-        $response = '{"mature":false,"status":"test status","broadcaster_language":"en",'
-            . '"display_name":"test_channel","game":"Gaming Talk Shows","delay":null,"language":"en",'
-            . '"_id":12345,"name":"test_channel","created_at":"2007-05-22T10:39:54Z",'
-            . '"updated_at":"2015-02-12T04:15:49Z","logo":"http://static-cdn.jtvnw.net/jtv_user_pictures/'
-            . 'test_channel-profile_image-94a42b3a13c31c02-300x300.jpeg","banner":"http://static-cdn.jtvnw.net/'
-            . 'jtv_user_pictures/test_channel-channel_header_image-08dd874c17f39837-640x125.png",'
-            . '"video_banner":"http://static-cdn.jtvnw.net/jtv_user_pictures/'
-            . 'test_channel-channel_offline_image-b314c834d210dc1a-640x360.png","background":null,'
-            . '"profile_banner":"http://static-cdn.jtvnw.net/jtv_user_pictures/'
-            . 'test_channel-profile_banner-6936c61353e4aeed-480.png","profile_banner_background_color":"null",'
-            . '"partner":true,"url":"http://www.twitch.tv/test_channel","views":49144894,"followers":215780,'
-            . '"_links":{"self":"https://api.twitch.tv/kraken/channels/test_channel",'
-            . '"follows":"https://api.twitch.tv/kraken/channels/test_channel/follows",'
-            . '"commercial":"https://api.twitch.tv/kraken/channels/test_channel/commercial",'
-            . '"stream_key":"https://api.twitch.tv/kraken/channels/test_channel/stream_key",'
-            . '"chat":"https://api.twitch.tv/kraken/chat/test_channel",'
-            . '"features":"https://api.twitch.tv/kraken/channels/test_channel/features",'
-            . '"subscriptions":"https://api.twitch.tv/kraken/channels/test_channel/subscriptions",'
-            . '"editors":"https://api.twitch.tv/kraken/channels/test_channel/editors",'
-            . '"teams":"https://api.twitch.tv/kraken/channels/test_channel/teams",'
-            . '"videos":"https://api.twitch.tv/kraken/channels/test_channel/videos"}}';
+        $response = [
+            "mature" => false,
+            "status" => "test status",
+            "url" => "http://www.twitch.tv/test_channel",
+            "_links" => [
+                "self" => "https://api.twitch.tv/kraken/channels/test_channel",
+                "follows" => "https://api.twitch.tv/kraken/channels/test_channel/follows",
+                "commercial" => "https://api.twitch.tv/kraken/channels/test_channel/commercial",
+            ],
+        ];
 
-        $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", null, $response);
+        $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", [], $response);
 
         $api = $this->getApi();
         $result = $api->getChannel("test_channel");
 
-        $links = [
-            "self" => "https://api.twitch.tv/kraken/channels/test_channel",
-            "follows" => "https://api.twitch.tv/kraken/channels/test_channel/follows",
-            "commercial" => "https://api.twitch.tv/kraken/channels/test_channel/commercial",
-            "stream_key" => "https://api.twitch.tv/kraken/channels/test_channel/stream_key",
-            "chat" => "https://api.twitch.tv/kraken/chat/test_channel",
-            "features" => "https://api.twitch.tv/kraken/channels/test_channel/features",
-            "subscriptions" => "https://api.twitch.tv/kraken/channels/test_channel/subscriptions",
-            "editors" => "https://api.twitch.tv/kraken/channels/test_channel/editors",
-            "teams" => "https://api.twitch.tv/kraken/channels/test_channel/teams",
-            "videos" => "https://api.twitch.tv/kraken/channels/test_channel/videos",
-        ];
-
         $this->assertEquals("http://www.twitch.tv/test_channel", $result["url"]);
-        $this->assertEquals($links, $result["_links"]);
-        $this->assertEquals("2007-05-22T10:39:54Z", $result["created_at"]);
-        $this->assertEquals("12345", $result["_id"]);
 
         $this->authenticate($api, []);
 
-        $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", null, $response, true);
+        $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", [], $response, true);
         $result = $api->getChannel("test_channel");
 
         $this->assertEquals("http://www.twitch.tv/test_channel", $result["url"]);
-        $this->assertEquals($links, $result["_links"]);
-        $this->assertEquals("2007-05-22T10:39:54Z", $result["created_at"]);
-        $this->assertEquals("12345", $result["_id"]);
     }
     public function testGetAuthenticatedChannel() {}
     public function testGetChannelVideos() {}
-    public function testGetFollowing() {}
+    public function testGetChannelFollowers() {}
     public function testGetEditors() {}
     public function testUpdateChannel() {}
     public function testResetStreamKey() {}
@@ -241,7 +265,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function testGetEmoticonImages() {}
 
     // Follows Routes
-    public function testGetChannelsFollowers() {}
+    //public function testGetChannelsFollowers() {}
     public function testGetUsersFollowers() {}
     public function testDoesUserFollowChannel() {}
     public function testFollowChannel() {}
@@ -289,4 +313,12 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     public function testGetTopVideos() {}
     //public function testGetChannelVideos() {}
     public function testGetFollowedVideos() {}
+
+    // Request Methods
+    //   These are tested through the actual api.
+    // public function testDelete() {}
+    // public function testGet() {}
+    // public function testPost() {}
+    // public function testPut() {}
+    // public function testAddHeaders() {}
 }
