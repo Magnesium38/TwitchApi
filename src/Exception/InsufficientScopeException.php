@@ -16,8 +16,12 @@ class InsufficientScopeException extends \Exception implements TwitchException {
      * @param String $requiredScope
      * @return InsufficientScopeException
      */
-    public static function createException($requiredScope) {
-        $exception = new InsufficientScopeException($requiredScope . " is required.");
+    public static function createException($requiredScope, $availableScopes = []) {
+        $message = $requiredScope . " is required.";
+        if (!empty($availableScopes)) {
+            $message = $message . " " . implode(" ", $availableScopes) . " are available.";
+        }
+        $exception = new InsufficientScopeException($message);
         $exception->setRequiredScope($requiredScope);
         return $exception;
     }

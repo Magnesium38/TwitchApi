@@ -141,7 +141,7 @@ class Client {
      */
     protected function requireScope($scope) {
         if (!in_array($scope, $this->getScope())) {
-            throw InsufficientScopeException::createException($scope);
+            throw InsufficientScopeException::createException($scope, $this->getScope());
         }
     }
 
@@ -153,6 +153,7 @@ class Client {
      * @param int $offset
      * @return array
      * @throws InsufficientScopeException
+     * @throws \InvalidArgumentException
      * @throws NotAuthenticatedException
      */
     public function getBlockedUsers($limit = 25, $offset = 0) {
