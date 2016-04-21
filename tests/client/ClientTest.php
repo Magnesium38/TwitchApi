@@ -6,11 +6,11 @@ use MagnesiumOxide\TwitchApi\Scope;
 
 class ClientTest extends BaseClientTest {
     public function testConstructor() {
-        $response = $this->getBaseLinks();
-        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response, 200, true);
-
         $api = new Api($this->client->reveal(), $this->prophesize(ConfigRepository::class)->reveal());
         $this->assertNull($api->getUsername());
+
+        $response = $this->mockResponse($this->getBaseLinks(), 200);
+        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response, true);
 
         $this->authenticate($api, []);
         $this->assertEquals($this->username, $api->getUsername());
