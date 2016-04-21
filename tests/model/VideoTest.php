@@ -5,7 +5,6 @@ use MagnesiumOxide\TwitchApi\Model\Video;
 class VideoTest extends BaseModelTest {
     /** @var Video */
     private $video;
-    private $videoObject;
     protected $class = Video::class;
 
     public function setUp() {
@@ -18,9 +17,9 @@ class VideoTest extends BaseModelTest {
                 . '"_links":{"self":"https://api.twitch.tv/kraken/videos/c6055863",'
                 . '"channel":"https://api.twitch.tv/kraken/channels/twitch"},'
                 . '"channel":{"name":"twitch","display_name":"Twitch"}}';
-        $this->videoObject = json_decode($videoJson, true);
+        $videoArray = json_decode($videoJson, true);
 
-        $this->video = Video::create($this->videoObject);
+        $this->video = Video::create($videoArray);
     }
 
     public function testGetTitle() {
