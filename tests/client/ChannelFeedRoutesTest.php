@@ -1,6 +1,6 @@
 <?php
 
-class ChannelFeedRoutesTest extends BaseTest {
+class ChannelFeedRoutesTest extends BaseClientTest {
 
     // Channel Feed Routes
     public function testGetChannelPosts() { $this->markTestIncomplete('This test has not been implemented yet.'); }

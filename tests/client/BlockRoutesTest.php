@@ -5,7 +5,7 @@ use MagnesiumOxide\TwitchApi\Exception\NotAuthenticatedException;
 use MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException;
 use MagnesiumOxide\TwitchApi\Scope;
 
-class BlockRoutesTest extends BaseTest {
+class BlockRoutesTest extends BaseClientTest {
     public function testGetBlockedUsers() {
         $api = $this->getApi(["scopes" => [Scope::ReadUserBlocks]]);
         $this->authenticate($api, [Scope::ReadUserBlocks]);
@@ -45,7 +45,25 @@ class BlockRoutesTest extends BaseTest {
         $api->getBlockedUsers();
     }
 
-    public function testBlockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testBlockUser() {
+        $this->markTestIncomplete('This test has not been implemented yet.');
+    }
+
+    public function testBlockUserThrowsInsufficientScopeException() {
+        $this->markTestIncomplete('This test has not been implemented yet.');
+    }
+
+    public function testBlockUserThrowsNotAuthenticatedException() {
+        $this->expectException(InsufficientScopeException::class);
+
+        $api = $this->getApi(["scopes" => []]);
+        $this->authenticate($api, []);
+
+        $target = "test_channel_two";
+
+        $api->blockUser($target);
+    }
+
     public function testUnblockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 
 }

@@ -2,17 +2,17 @@
 
 use MagnesiumOxide\TwitchApi\Client as Api;
 use MagnesiumOxide\TwitchApi\ConfigRepository;
-use MagnesiumOxide\TwitchApi\RequestClient;
+use MagnesiumOxide\TwitchApi\Request;
 use MagnesiumOxide\TwitchApi\Scope;
 use Prophecy\Argument;
 
-class BaseTest extends PHPUnit_Framework_TestCase {
+abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
     protected $client;
     protected $username = "TestUser";
     protected $token = "TestUserAuthToken";
 
     public function setUp() {
-        $this->client = $this->prophesize(RequestClient::class);
+        $this->client = $this->prophesize(Request::class);
     }
 
     protected function getBaseLinks() {

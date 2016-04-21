@@ -11,7 +11,13 @@
     ],
     "autoload": {
         "psr-4": {
-            "MagnesiumOxide\\TwitchApi\\": "src"
+            "MagnesiumOxide\\TwitchApi\\": "src",
+            "MagnesiumOxide\\TwitchApi\\Model\\": "src/Models"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MagnesiumOxide\\TwitchApi\\": "tests"
         }
     },
     "require": {

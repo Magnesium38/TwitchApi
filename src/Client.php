@@ -29,9 +29,9 @@ class Client {
      * @param ConfigRepository $config
      * @param RequestInterface $client
      */
-    public function __construct(RequestInterface $client, ConfigRepository $config = null) {
-        $this->config = $config ? $config : new ConfigRepository();
-        $this->client = $client;
+    public function __construct(RequestInterface $client = null, ConfigRepository $config = null) {
+        $this->config = $config ?: new ConfigRepository();
+        $this->client = $client ?: new Request();
     }
 
     /**
@@ -332,7 +332,7 @@ class Client {
         if ($channel_feed !== null) $params["channel_feed_enabled"] = $channel_feed;
 
         $uri = Client::buildUri("/channels/:channel", ["channel" => $channel]);
-        return $this->put($uri, $params);
+        return $this->put($uri, ["channel" => $params]);
     }
 
     /**

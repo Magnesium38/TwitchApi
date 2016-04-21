@@ -1,7 +1,6 @@
 <?php
 
-class FollowsRoutesTest extends BaseTest {
-    // Follows Routes
+class FollowsRoutesTest extends BaseClientTest {
     public function testGetUsersFollowers() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testDoesUserFollowChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testFollowChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }

@@ -2,7 +2,7 @@
 
 use MagnesiumOxide\TwitchApi\Client as Api;
 
-class ChannelRoutesTest extends BaseTest {
+class ChannelRoutesTest extends BaseClientTest {
     public function testGetChannel() {
         $response = [
                 "mature" => false,
@@ -29,7 +29,7 @@ class ChannelRoutesTest extends BaseTest {
 
         $this->assertEquals("http://www.twitch.tv/test_channel", $result["url"]);
     }
-    
+
     public function testGetAuthenticatedChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testGetChannelVideos() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testGetChannelFollowers() { $this->markTestIncomplete('This test has not been implemented yet.'); }

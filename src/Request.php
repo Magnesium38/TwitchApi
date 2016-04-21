@@ -1,17 +1,18 @@
 <?php namespace MagnesiumOxide\TwitchApi;
 
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 
 /**
  * @package MagnesiumOxide\TwitchApi
  */
-class RequestClient implements RequestInterface {
+class Request implements RequestInterface {
     /** @var ClientInterface The actual client that makes the requests. */
     private $client;
 
-    public function __construct(ClientInterface $client) {
-        $this->client = $client;
+    public function __construct(ClientInterface $client = null) {
+        $this->client = $client ?: new Client();
     }
 
     /**
@@ -79,7 +80,7 @@ class RequestClient implements RequestInterface {
     }
 
     /**
-     * The actual method that calls the requests. Will only return the json body of the response as an array.
+     * The actual method that calls the requests. Will return only the json body of the response as an array.
      *
      * @param $method
      * @param $uri

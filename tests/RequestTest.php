@@ -4,7 +4,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 
-class RequestClientTest extends \PHPUnit_Framework_TestCase {
+class RequestTest extends \PHPUnit_Framework_TestCase {
     private $clientInterface;
     private $response;
     private $client;
@@ -12,7 +12,7 @@ class RequestClientTest extends \PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->clientInterface = $this->prophesize(Client::class);
         $this->response = $this->prophesize(ResponseInterface::class);
-        $this->client = new RequestClient($this->clientInterface->reveal());
+        $this->client = new Request($this->clientInterface->reveal());
     }
 
     private function requestShouldBeMade($method, $uri, $params, $headers, $response, $throwException = false) {
