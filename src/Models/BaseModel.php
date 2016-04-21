@@ -21,7 +21,7 @@ abstract class BaseModel {
      */
     protected function __construct(array $object) {
         $this->loadObject($object);
-        $this->client = new Client(["http_errors" => false]);
+        $this->client = new Client();
     }
 
     /**

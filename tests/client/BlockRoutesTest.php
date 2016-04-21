@@ -9,14 +9,17 @@ class BlockRoutesTest extends BaseClientTest {
     public function testGetBlockedUsers() {
         $api = $this->getApi(["scopes" => [Scope::ReadUserBlocks]]);
         $this->authenticate($api, [Scope::ReadUserBlocks]);
-        $response = [];
+        $responseBody = ["blocks" => []];
         $query = [
                 "limit" => 25,
                 "offset" => 0,
         ];
 
+        $response = $this->mockResponse($responseBody, 200);
+        $response->offsetGet("blocks")->willReturn([]);
+
         $uri = Api::BASE_URL . "/users/" . $this->username . "/blocks";
-        $this->requestShouldBeMade("GET", $uri, $query, $response, 200, true);
+        $this->requestShouldBeMade("GET", $uri, $query, $response, true);
 
         $api->getBlockedUsers();
     }

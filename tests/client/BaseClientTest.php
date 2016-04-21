@@ -3,7 +3,7 @@
 use MagnesiumOxide\TwitchApi\Client as Api;
 use MagnesiumOxide\TwitchApi\ConfigRepository;
 use MagnesiumOxide\TwitchApi\Request;
-use MagnesiumOxide\TwitchApi\Response;
+use MagnesiumOxide\TwitchApi\ResponseInterface;
 use Prophecy\Argument;
 
 abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
@@ -88,20 +88,24 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
         return $mockedConfig;
     }
 
+    protected function mockResponse(array $body, $statusCode) {
+        $response = $this->prophesize(ResponseInterface::class);
+        $response->getBody()->willReturn($body);
+        $response->getStatusCode()->willReturn($statusCode);
+
+        return $response;
+    }
+
     protected function getApi(array $config = []) {
         $mockedConfig = $this->mockConfig($config);
         return new Api($this->client->reveal(), $mockedConfig->reveal());
     }
 
-    protected function requestShouldBeMade($method, $uri, $params, $responseBody, $statusCode, $authenticated = false) {
+    protected function requestShouldBeMade($method, $uri, $params, $response, $authenticated = false) {
         $headers = ["Accept" => Api::ACCEPT_HEADER];
         if ($authenticated) {
             $headers["Authorization"] = "OAuth " . $this->token;
         }
-
-        $response = $this->prophesize(Response::class);
-        $response->getBody()->willReturn($responseBody);
-        $response->getStatusCode()->willReturn($statusCode);
 
         if ($method == "DELETE") {
             $this->client->delete($uri, $params, $headers)
@@ -124,7 +128,8 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
 
     protected function authenticate(Api $api, array $scopes) {
         $code = "ThisIsTheBestAuthenticationCode";
-        $response = ["access_token" => $this->token, "scope" => implode(",", $scopes)];
+
+        $responseBody = ["access_token" => $this->token, "scope" => implode(",", $scopes)];
         $params = [
                 "client_id" => $api->getConfig()["ClientId"],
                 "client_secret" => $api->getConfig()["ClientSecret"],
@@ -134,9 +139,13 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
                 "state" => $api->getConfig()["State"],
         ];
 
-        $this->requestShouldBeMade("POST", Api::BASE_URL . "/oauth2/token", $params, $response, 200);
+        $mockedResponse = $this->prophesize(ResponseInterface::class);
+        $mockedResponse->getBody()->willReturn($responseBody);
+        $mockedResponse->getStatusCode()->willReturn(200);
 
-        $response2 = [
+        $this->requestShouldBeMade("POST", Api::BASE_URL . "/oauth2/token", $params, $mockedResponse);
+
+        $responseBody2 = [
                 "token" => [
                         "authorization" => [
                                 "scopes" => implode(",", $scopes),
@@ -148,7 +157,10 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
                 ],
         ];
 
-        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response2, 200, true);
+        $mockedResponse2 = $this->prophesize(ResponseInterface::class);
+        $mockedResponse2->getBody()->willReturn($responseBody2);
+
+        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $mockedResponse2, true);
 
         $api->authenticate($code);
     }
