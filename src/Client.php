@@ -2,6 +2,7 @@
 
 use MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException;
 use MagnesiumOxide\TwitchApi\Exception\NotAuthenticatedException;
+use MagnesiumOxide\TwitchApi\Model\Block;
 
 /**
  * A wrapper for the Twitch.tv API.
@@ -111,13 +112,21 @@ class Client {
         ];
 
         $response = $this->post(Client::BASE_URL . "/oauth2/token", $params);
-        if (isset($response->error)) {
-            throw new \Exception; // REVISE THIS. Test what errors could be given.
+        if ($response->getStatusCode() != 200) {
+            // ALL OF THIS NEEDS TESTING.
+            throw new \Exception;
+            /*if (isset($response->error)) {
+                throw new \Exception; // REVISE THIS. Test what errors could be given.
+            }*/
         }
+
+        $response = $response->getBody();
+
         $this->token = $response["access_token"];
         //$this->scope = $response["scope"]; // Assume that it will be what was passed to it.
 
         $response = $this->get(Client::BASE_URL);
+        $response = $response->getBody();
 
         $this->username = $response["token"]["user_name"];
     }
@@ -1163,7 +1172,7 @@ class Client {
      *
      * @param $uri
      * @param array $query
-     * @return array
+     * @return ResponseInterface
      */
     private function get($uri, array $query = []) {
         return $this->client->get($uri, $query, $this->getHeaders());
@@ -1174,7 +1183,7 @@ class Client {
      *
      * @param $uri
      * @param array $query
-     * @return array
+     * @return ResponseInterface
      */
     private function delete($uri, array $query = []) {
         return $this->client->delete($uri, $query, $this->getHeaders());
@@ -1185,7 +1194,7 @@ class Client {
      *
      * @param $uri
      * @param array $parameters
-     * @return array
+     * @return ResponseInterface
      */
     private function post($uri, array $parameters = []) {
         return $this->client->post($uri, $parameters, $this->getHeaders());
@@ -1196,7 +1205,7 @@ class Client {
      *
      * @param $uri
      * @param array $parameters
-     * @return array
+     * @return ResponseInterface
      */
     private function put($uri, array $parameters = []) {
         return $this->client->put($uri, $parameters, $this->getHeaders());

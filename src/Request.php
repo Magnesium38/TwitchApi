@@ -21,7 +21,7 @@ class Request implements RequestInterface {
      * @param $uri
      * @param array $query
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function delete($uri, array $query = [], array $headers = []) {
         $options = [];
@@ -37,7 +37,7 @@ class Request implements RequestInterface {
      * @param $uri
      * @param array $query
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function get($uri, array $query = [], array $headers = []) {
         $options = [];
@@ -53,7 +53,7 @@ class Request implements RequestInterface {
      * @param $uri
      * @param array $parameters
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function post($uri, array $parameters = [], array $headers = []) {
         $options = [];
@@ -69,7 +69,7 @@ class Request implements RequestInterface {
      * @param $uri
      * @param array $parameters
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function put($uri, array $parameters = [], array $headers = []) {
         $options = [];
@@ -85,14 +85,17 @@ class Request implements RequestInterface {
      * @param $method
      * @param $uri
      * @param $options
-     * @return array
+     * @return ResponseInterface
      */
     private function request($method, $uri, $options) {
         try {
             $response = $this->client->request($method, $uri, $options);
-            $result = json_decode($response->getBody(), true);
+            $body = json_decode($response->getBody(), true);
+
+            $result = new Response($response->getStatusCode(), $body);
         } catch (RequestException $e) {
-            $result = json_decode($e->getResponse()->getBody(), true);
+            $body = json_decode($e->getResponse()->getBody(), true);
+            $result = new Response($e->getResponse()->getStatusCode(), $body);
         }
         return $result;
     }

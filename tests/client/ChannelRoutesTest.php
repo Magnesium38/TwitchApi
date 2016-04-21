@@ -4,6 +4,10 @@ use MagnesiumOxide\TwitchApi\Client as Api;
 
 class ChannelRoutesTest extends BaseClientTest {
     public function testGetChannel() {
+        $this->markTestIncomplete('This test has not been implemented yet.');
+
+        // NOT DONE. Come back to this test once the method returns the channel object and revise.
+
         $response = [
                 "mature" => false,
                 "status" => "test status",
@@ -15,7 +19,7 @@ class ChannelRoutesTest extends BaseClientTest {
                 ],
         ];
 
-        $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", [], $response);
+        $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", [], $response, 200);
 
         $api = $this->getApi();
         $result = $api->getChannel("test_channel");

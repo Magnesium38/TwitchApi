@@ -11,19 +11,19 @@ class ConfigRepository implements ArrayAccess {
         $this->config = require $this->file;
     }
 
-    public function offsetExists($key) {
-        return isset($this->config[$key]);
+    public function offsetExists($offset) {
+        return isset($this->config[$offset]);
     }
 
-    public function offsetGet($key) {
-        return $this->config[$key];
+    public function offsetGet($offset) {
+        return $this->config[$offset];
     }
 
-    public function offsetSet($key, $value) {
-        $this->config[$key] = $value;
+    public function offsetSet($offset, $value) {
+        $this->config[$offset] = $value;
     }
 
-    public function offsetUnset($key) {
-        unset($this->config[$key]);
+    public function offsetUnset($offset) {
+        unset($this->config[$offset]);
     }
 }

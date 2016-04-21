@@ -10,7 +10,7 @@ interface RequestInterface {
      * @param $uri
      * @param array $query
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function delete($uri, array $query = [], array $headers = []);
 
@@ -20,7 +20,7 @@ interface RequestInterface {
      * @param $uri
      * @param array $query
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function get($uri, array $query = [], array $headers = []);
 
@@ -30,7 +30,7 @@ interface RequestInterface {
      * @param $uri
      * @param array $parameters
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function post($uri, array $parameters = [], array $headers = []);
 
@@ -40,7 +40,7 @@ interface RequestInterface {
      * @param $uri
      * @param array $parameters
      * @param array $headers
-     * @return array
+     * @return ResponseInterface
      */
     public function put($uri, array $parameters = [], array $headers = []);
 }

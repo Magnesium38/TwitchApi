@@ -3,11 +3,11 @@
 /**
  * @package MagnesiumOxide\TwitchApi
  */
-interface ResponseInterface {
+interface ResponseInterface extends \ArrayAccess {
     /**
      * @return null|int
      */
-    public function getResponseCode();
+    public function getStatusCode();
 
     /**
      * @return array

@@ -23,9 +23,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         }
 
         $mockedResponse = $this->prophesize(ResponseInterface::class);
-        $mockedResponse->getBody()
-            ->shouldBeCalled()
-            ->willReturn($response);
+        $mockedResponse->getBody()->willReturn($response);
+        $mockedResponse->getStatusCode()->willReturn(200);
 
         if ($throwException === false) {
             $this->clientInterface->request($method, $uri, $params)
@@ -49,7 +48,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("DELETE", $uri, ["query" => $query], [], $response);
-        $this->assertEquals("true", $this->client->delete($uri, $query)["success"]);
+        $result = $this->client->delete($uri, $query)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesDeleteRequestWithHeaders() {
@@ -59,7 +59,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 
         $headers = ["Auth" => "My Token"];
         $this->requestShouldBeMade("DELETE", $uri, ["query" => $query], ["Auth" => "My Token"], $response);
-        $this->assertEquals("true", $this->client->delete($uri, $query, $headers)["success"]);
+        $result = $this->client->delete($uri, $query, $headers)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesDeleteRequestThrowsException() {
@@ -68,7 +69,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("DELETE", $uri, ["query" => $query], [], $response, true);
-        $this->assertEquals("true", $this->client->delete($uri, $query)["success"]);
+        $result = $this->client->delete($uri, $query)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesGetRequest() {
@@ -77,7 +79,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("GET", $uri, ["query" => $query], [], $response);
-        $this->assertEquals("true", $this->client->get($uri, $query)["success"]);
+        $result = $this->client->get($uri, $query)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesGetRequestWithHeaders() {
@@ -87,7 +90,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 
         $headers = ["Auth" => "My Token"];
         $this->requestShouldBeMade("GET", $uri, ["query" => $query], ["Auth" => "My Token"], $response);
-        $this->assertEquals("true", $this->client->get($uri, $query, $headers)["success"]);
+        $result = $this->client->get($uri, $query, $headers)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesGetRequestThrowsException() {
@@ -96,7 +100,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("GET", $uri, ["query" => $query], [], $response, true);
-        $this->assertEquals("true", $this->client->get($uri, $query)["success"]);
+        $result = $this->client->get($uri, $query)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesPostRequest() {
@@ -105,7 +110,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("POST", $uri, ["form_params" => $params], [], $response);
-        $this->assertEquals("true", $this->client->post($uri, $params)["success"]);
+        $result = $this->client->post($uri, $params)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesPostRequestWithHeaders() {
@@ -115,7 +121,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 
         $headers = ["Auth" => "My Token"];
         $this->requestShouldBeMade("POST", $uri, ["form_params" => $params], ["Auth" => "My Token"], $response);
-        $this->assertEquals("true", $this->client->post($uri, $params, $headers)["success"]);
+        $result = $this->client->post($uri, $params, $headers)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesPostRequestThrowsException() {
@@ -124,7 +131,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("POST", $uri, ["form_params" => $params], [], $response, true);
-        $this->assertEquals("true", $this->client->post($uri, $params)["success"]);
+        $result = $this->client->post($uri, $params)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesPutRequest() {
@@ -133,7 +141,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("PUT", $uri, ["form_params" => $params], [], $response);
-        $this->assertEquals("true", $this->client->put($uri, $params)["success"]);
+        $result = $this->client->put($uri, $params)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesPutRequestWithHeaders() {
@@ -143,7 +152,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 
         $headers = ["Auth" => "My Token"];
         $this->requestShouldBeMade("PUT", $uri, ["form_params" => $params], ["Auth" => "My Token"], $response);
-        $this->assertEquals("true", $this->client->put($uri, $params, $headers)["success"]);
+        $result = $this->client->put($uri, $params, $headers)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 
     public function testMakesPutRequestThrowsException() {
@@ -152,6 +162,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         $response = '{"success": "true"}';
 
         $this->requestShouldBeMade("PUT", $uri, ["form_params" => $params], [], $response, true);
-        $this->assertEquals("true", $this->client->put($uri, $params)["success"]);
+        $result = $this->client->put($uri, $params)->getBody();
+        $this->assertEquals("true", $result["success"]);
     }
 }
