@@ -29,9 +29,7 @@ class ChannelRoutesTest extends BaseClientTest {
         $this->authenticate($api, []);
 
         $this->requestShouldBeMade("GET", Api::BASE_URL . "/channels/test_channel", [], $response, true);
-        $result = $api->getChannel("test_channel");
-
-        $this->assertEquals("http://www.twitch.tv/test_channel", $result["url"]);
+        $api->getChannel("test_channel");
     }
 
     public function testGetAuthenticatedChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }

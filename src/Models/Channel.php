@@ -1,7 +1,7 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
 class Channel extends BaseModel {
-    public function getMature() {
+    public function isMature() {
         return $this->getHelper("mature");
     }
 
@@ -25,10 +25,21 @@ class Channel extends BaseModel {
         return $this->getHelper("delay");
     }
 
-    public function getLanguage() {
+    /**
+     * I think this is the same as broadcaster_language. So I'm hiding this one since it seems like a duplicate.
+     *
+     * @return mixed
+     */
+    protected function getLanguage() {
         return $this->getHelper("language");
     }
 
+    /**
+     * Returns the internal id of the object.
+     * I don't see anywhere in the API where this value could be used.
+     *
+     * @return mixed
+     */
     public function getId() {
         return $this->getHelper("_id");
     }
@@ -38,11 +49,11 @@ class Channel extends BaseModel {
     }
 
     public function getCreatedAt() {
-        return $this->getHelper("created_at");
+        return new \DateTime($this->getHelper("created_at"));
     }
 
-    public function getUpdatedAt() {
-        return $this->getHelper("updated_at");
+    public function lastUpdatedAt() {
+        return new \DateTime($this->getHelper("updated_at"));
     }
 
     public function getLogo() {
@@ -69,7 +80,7 @@ class Channel extends BaseModel {
         return $this->getHelper("profile_banner_background_color");
     }
 
-    public function getPartnerStatus() {
+    public function isPartner() {
         return $this->getHelper("partner");
     }
 
@@ -85,7 +96,13 @@ class Channel extends BaseModel {
         return $this->getHelper("followers");
     }
 
-    public function getLinks() {
+    /**
+     * Returns the self-referencing links provided by the API.
+     * I don't see a reason to expose this method. Leaving protected in case there's a niche use case.
+     *
+     * @return array|null
+     */
+    protected function getLinks() {
         return $this->getHelper("_links");
     }
 }

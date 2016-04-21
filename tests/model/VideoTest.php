@@ -20,7 +20,7 @@ class VideoTest extends BaseModelTest {
                 . '"channel":{"name":"twitch","display_name":"Twitch"}}';
         $this->videoObject = json_decode($videoJson, true);
 
-        $this->video = new Video($this->videoObject);
+        $this->video = Video::create($this->videoObject);
     }
 
     public function testGetTitle() {

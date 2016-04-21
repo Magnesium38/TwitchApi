@@ -12,7 +12,7 @@ class Request implements RequestInterface {
     private $client;
 
     public function __construct(ClientInterface $client = null) {
-        $this->client = $client ?: new Client();
+        $this->client = $client ?: new Client(["http_errors" => false]);
     }
 
     /**

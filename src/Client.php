@@ -155,7 +155,7 @@ class Client {
     }
 
     /**
-     * Returns a list of blocks objects on the authenticated user's block list. Sorted by recency.
+     * Returns a list of block objects on the authenticated user's block list. Sorted by recency.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#get-usersuserblocks
      *
      * @param int $limit
@@ -174,7 +174,14 @@ class Client {
         }
 
         $uri = Client::buildUri("/users/:user/blocks", ["user" => $this->username]);
-        return $this->get($uri, ["limit" => $limit, "offset" => $offset]);
+        $result = $this->get($uri, ["limit" => $limit, "offset" => $offset]);
+        $blocks = [];
+
+        foreach ($result["blocks"] as $item) {
+            $blocks[] = Block::create($item);
+        }
+
+        return $blocks;
     }
 
     /**
@@ -182,7 +189,7 @@ class Client {
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#put-usersuserblockstarget
      *
      * @param $target
-     * @return array
+     * @return Block
      * @throws InsufficientScopeException
      * @throws NotAuthenticatedException
      */
@@ -191,29 +198,34 @@ class Client {
         $this->requireScope(Scope::EditUserBlocks);
 
         $uri = Client::buildUri("/users/:user/blocks/:target", ["user" => $this->username, "target" => $target]);
-        return $this->put($uri);
+        return Block::create($this->put($uri)->getBody());
     }
 
     /**
      * Removes $target from the authenticated user's block list.
+     * Returns true on success, null on user wasn't blocked, and false on deleting the block failed.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#delete-usersuserblockstarget
      *
      * @param $target
-     * @return array
+     * @return bool|null
      * @throws InsufficientScopeException
      * @throws NotAuthenticatedException
      */
     public function unblockUser($target) {
-        // Has no response body.
-        // 204 No Content if successful
-        // 404 not found if not on block list.
-        // 422 Unprocessable Entity if delete failed.
 
         $this->requireAuthentication();
         $this->requireScope(Scope::EditUserBlocks);
 
         $uri = Client::buildUri("/users/:user/blocks/:target", ["user" => $this->username, "target" => $target]);
-        return $this->delete($uri);
+        $result = $this->delete($uri)->getStatusCode();
+
+        if ($result == 204) {
+            return true;
+        } elseif ($result == 404) {
+            return null;
+        } else {
+            return false;
+        }
     }
 
     /**
