@@ -1,8 +1,6 @@
 <?php
 
 use MagnesiumOxide\TwitchApi\Client as Api;
-use MagnesiumOxide\TwitchApi\Exception\NotAuthenticatedException;
-use MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException;
 use MagnesiumOxide\TwitchApi\Scope;
 
 class BlockRoutesTest extends BaseClientTest {
@@ -24,23 +22,32 @@ class BlockRoutesTest extends BaseClientTest {
         $api->getBlockedUsers();
     }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
     public function testGetBlockedUsersThrowsInvalidArgumentException() {
-        $this->expectException(\InvalidArgumentException::class);
+        //$this->expectException(\InvalidArgumentException::class);
 
         $api = $this->getApi(["scopes" => [Scope::ReadUserBlocks]]);
         $this->authenticate($api, [Scope::ReadUserBlocks]);
         $api->getBlockedUsers(300, 25);
     }
 
+    /**
+     * @expectedException \MagnesiumOxide\TwitchApi\Exception\NotAuthenticatedException
+     */
     public function testGetBlockedUsersThrowsNotAuthenticatedException() {
-        $this->expectException(NotAuthenticatedException::class);
+        //$this->expectException(NotAuthenticatedException::class);
 
         $api = $this->getApi();
         $api->getBlockedUsers();
     }
 
+    /**
+     * @expectedException \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
+     */
     public function testGetBlockedUsersThrowsInsufficientScopeException() {
-        $this->expectException(InsufficientScopeException::class);
+        //$this->expectException(InsufficientScopeException::class);
 
         $api = $this->getApi(["scopes" => []]);
         $this->authenticate($api, []);
@@ -56,8 +63,11 @@ class BlockRoutesTest extends BaseClientTest {
         $this->markTestIncomplete('This test has not been implemented yet.');
     }
 
+    /**
+     * @expectedException \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
+     */
     public function testBlockUserThrowsNotAuthenticatedException() {
-        $this->expectException(InsufficientScopeException::class);
+        //$this->expectException(InsufficientScopeException::class);
 
         $api = $this->getApi(["scopes" => []]);
         $this->authenticate($api, []);
