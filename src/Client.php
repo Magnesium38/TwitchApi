@@ -1171,7 +1171,7 @@ class Client {
      * @return array
      */
     private function getHeaders() {
-        $headers = ["Accept" => Client::ACCEPT_HEADER];
+        $headers = ["Accept" => Client::ACCEPT_HEADER, "Client-ID" => $this->config["ClientId"]];
         if ($this->token !== null) {
             $headers["Authorization"] = "OAuth " . $this->token;
         }
