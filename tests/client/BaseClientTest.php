@@ -101,8 +101,8 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
         return new Api($this->client->reveal(), $mockedConfig->reveal());
     }
 
-    protected function requestShouldBeMade($method, $uri, $params, $response, $authenticated = false) {
-        $headers = ["Accept" => Api::ACCEPT_HEADER];
+    protected function requestShouldBeMade($method, $uri, $params, $response, $config, $authenticated = false) {
+        $headers = ["Accept" => Api::ACCEPT_HEADER, "Client-ID" => $config["ClientId"]];
         if ($authenticated) {
             $headers["Authorization"] = "OAuth " . $this->token;
         }
@@ -143,7 +143,7 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
         $mockedResponse->getBody()->willReturn($responseBody);
         $mockedResponse->getStatusCode()->willReturn(200);
 
-        $this->requestShouldBeMade("POST", Api::BASE_URL . "/oauth2/token", $params, $mockedResponse);
+        $this->requestShouldBeMade("POST", Api::BASE_URL . "/oauth2/token", $params, $mockedResponse, $api->getConfig());
 
         $responseBody2 = [
                 "token" => [
@@ -160,7 +160,7 @@ abstract class BaseClientTest extends PHPUnit_Framework_TestCase {
         $mockedResponse2 = $this->prophesize(ResponseInterface::class);
         $mockedResponse2->getBody()->willReturn($responseBody2);
 
-        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $mockedResponse2, true);
+        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $mockedResponse2, $api->getConfig(), true);
 
         $api->authenticate($code);
     }

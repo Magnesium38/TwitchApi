@@ -17,7 +17,7 @@ class BlockRoutesTest extends BaseClientTest {
         $response->offsetGet("blocks")->willReturn([]);
 
         $uri = Api::BASE_URL . "/users/" . $this->username . "/blocks";
-        $this->requestShouldBeMade("GET", $uri, $query, $response, true);
+        $this->requestShouldBeMade("GET", $uri, $query, $response, $api->getConfig(), true);
 
         $api->getBlockedUsers();
     }

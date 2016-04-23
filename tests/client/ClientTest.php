@@ -10,7 +10,7 @@ class ClientTest extends BaseClientTest {
         $this->assertNull($api->getUsername());
 
         $response = $this->mockResponse($this->getBaseLinks(), 200);
-        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response, true);
+        $this->requestShouldBeMade("GET", Api::BASE_URL, [], $response, $api->getConfig(), true);
 
         $this->authenticate($api, []);
         $this->assertEquals($this->username, $api->getUsername());
