@@ -7,6 +7,24 @@ php:
   - hhvm
   - nightly
 
+env:
+  - GUZZLE_VERSION=^5.3
+
+matrix:
+  include:
+    - php: '5.5.9'
+      env: GUZZLE_VERSION=^6.0
+    - php: '5.5'
+      env: GUZZLE_VERSION=^6.0
+    - php: '5.6'
+      env: GUZZLE_VERSION=^6.0
+    - php: '7.0'
+      env: GUZZLE_VERSION=^6.0
+    - php: hhvm
+      env: GUZZLE_VERSION=^6.0
+    - php: nightly
+      env: GUZZLE_VERSION=^6.0
+
 notifications:
   email: false
 
