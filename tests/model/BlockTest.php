@@ -82,4 +82,7 @@ class BlockTest extends BaseModelTest {
         $this->mockConfig();
         Block::getBlockedUsers(User::create([]), 25, 0);
     }
+
+    public function testBlockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testUnblockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 }

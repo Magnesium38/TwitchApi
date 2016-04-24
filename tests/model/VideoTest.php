@@ -25,4 +25,8 @@ class VideoTest extends BaseModelTest {
     public function testGetTitle() {
         $this->assertEquals("Twitch Weekly - February 6, 2015", $this->video->getTitle());
     }
+
+    public function testGetVideo() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetTopVideos() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testGetFollowedVideos() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 }

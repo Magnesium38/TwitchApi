@@ -73,6 +73,17 @@ class User extends BaseModel {
         $this->authToken = $token;
     }
 
+    public static function getAuthenticatedUrl() {
+        $params = [
+            "response_type" => "code",
+            "client_id" => self::$config["ClientId"],
+            "redirect_uri" => self::$config["RedirectUri"],
+            "scope" => implode("+", self::$config["Scope"]),
+            "state" => self::$config["State"],
+        ];
+        return self::buildUri("/oauth2/authorize") . "?" . http_build_query($params);
+    }
+
     public static function getAuthenticatedUser($code) {
         $params = [
                 "client_id" => self::$config["ClientId"],
@@ -83,7 +94,7 @@ class User extends BaseModel {
                 "state" => self::$config["State"],
         ];
 
-        $response = self::$client->post(ClientInterface::BASE_URL . "/oauth2/token", $params);
+        $response = self::$client->post(self::BASE_URL . "/oauth2/token", $params);
 
         if ($response->getStatusCode() != 200) {
             // ALL OF THIS NEEDS TESTING.
@@ -102,7 +113,7 @@ class User extends BaseModel {
             $user->setAuthToken($token);
             $user->loadUserInfo();
         } else {
-            $response = self::$client->get(ClientInterface::BASE_URL, [], [], $token);
+            $response = self::$client->get(self::BASE_URL, [], [], $token);
             $response = $response->getBody();
 
             $username = $response["token"]["user_name"];
