@@ -21,6 +21,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $contents = $response->getBody()->getContents();
         $body = json_decode($contents, true);
         var_dump($body);
+        var_dump($contents);
         $this->assertEquals("DELETE", $body["method"]);
     }
 
@@ -29,6 +30,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $contents = $response->getBody()->getContents();
         $body = json_decode($contents, true);
         var_dump($body);
+        var_dump($contents);
         $this->assertEquals("GET", $body["method"]);
     }
 
@@ -37,6 +39,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $contents = $response->getBody()->getContents();
         $body = json_decode($contents, true);
         var_dump($body);
+        var_dump($contents);
         $this->assertEquals("POST", $body["method"]);
     }
 
@@ -45,6 +48,7 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $contents = $response->getBody()->getContents();
         $body = json_decode($contents, true);
         var_dump($body);
+        var_dump($contents);
         $this->assertEquals("PUT", $body["method"]);
     }
 }
