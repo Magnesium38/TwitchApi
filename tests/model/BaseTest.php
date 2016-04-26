@@ -4,10 +4,10 @@ use GuzzleHttp\Client;
 use MagnesiumOxide\TwitchApi\ConfigRepository;
 use MagnesiumOxide\TwitchApi\Helpers\ClientInterface;
 use MagnesiumOxide\TwitchApi\Model\BaseModel;
-use MagnesiumOxide\TwitchApi\Model\User;
+use MagnesiumOxide\TwitchApi\Model\AuthenticatedUser;
 use Prophecy\Argument;
 
-abstract class BaseModelTest extends PHPUnit_Framework_TestCase {
+abstract class BaseTest extends PHPUnit_Framework_TestCase {
     protected $class = null;
     protected $testAuthUsername = "TestUserName";
     protected $testAuthToken = "TestUserAuthToken";
@@ -23,7 +23,7 @@ abstract class BaseModelTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function mockAuthUser() {
-        $mockedUser = $this->prophesize(User::class);
+        $mockedUser = $this->prophesize(AuthenticatedUser::class);
         $mockedUser->getName()->willReturn($this->testAuthUsername);
         $mockedUser->getUsername()->willReturn($this->testAuthUsername);
         $mockedUser->getAuthToken()->willReturn($this->testAuthToken);
