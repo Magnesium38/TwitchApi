@@ -29,7 +29,7 @@ abstract class BaseModel {
      *
      * @param array $object
      */
-    protected function __construct(array $object) {
+    protected function __construct(array $object = []) {
         $this->loadObject($object);
     }
 

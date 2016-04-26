@@ -1,4 +1,5 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
+
 use MagnesiumOxide\TwitchApi\Scope;
 
 /**
@@ -54,7 +55,7 @@ class Block extends BaseModel {
      * @throws \InvalidArgumentException
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
      */
-    public static function getBlockedUsers(User $user, $limit = 25, $offset = 0) {
+    public static function getBlockedUsers(AuthenticatedUser $user, $limit = 25, $offset = 0) {
         self::requireScope(Scope::ReadUserBlocks);
 
         if ($limit > 100) {
@@ -89,11 +90,13 @@ class Block extends BaseModel {
      * @return Block
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
      */
-    public static function blockUser(User $user, $target) {
+    public static function blockUser(AuthenticatedUser $user, $target) {
         self::requireScope(Scope::EditUserBlocks);
 
         $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
-        $body = json_decode(self::$client->put($uri), true);
+        $headers = self::buildHeaders();
+        $response = self::$client->put($uri, [], $headers, $user->getAuthToken());
+        $body = json_decode($response->getBody(), true);
 
         return Block::create($body);
     }
@@ -108,11 +111,12 @@ class Block extends BaseModel {
      * @return bool|null
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
      */
-    public static function unblockUser(User $user, $target) {
+    public static function unblockUser(AuthenticatedUser $user, $target) {
         self::requireScope(Scope::EditUserBlocks);
 
         $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
-        $result = self::$client->delete($uri)->getStatusCode();
+        $headers = self::buildHeaders();
+        $result = self::$client->delete($uri, [], $headers, $user->getAuthToken())->getStatusCode();
 
         if ($result == 204) {
             return true;

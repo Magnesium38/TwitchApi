@@ -2,7 +2,7 @@
 
 use MagnesiumOxide\TwitchApi\Model\Video;
 
-class VideoTest extends BaseModelTest {
+class VideoTest extends BaseTest {
     /** @var Video */
     private $video;
     protected $class = Video::class;

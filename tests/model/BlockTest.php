@@ -1,11 +1,12 @@
 <?php
 
+use MagnesiumOxide\TwitchApi\Model\AuthenticatedUser;
 use MagnesiumOxide\TwitchApi\Model\BaseModel;
 use MagnesiumOxide\TwitchApi\Model\Block;
 use MagnesiumOxide\TwitchApi\Model\User;
 use MagnesiumOxide\TwitchApi\Scope;
 
-class BlockTest extends BaseModelTest {
+class BlockTest extends BaseTest {
     /** @var Block */
     private $block;
     private $blockJson;
@@ -72,7 +73,7 @@ class BlockTest extends BaseModelTest {
      * @expectedException InvalidArgumentException
      */
     public function testGetBlockedUsersThrowsInvalidArgumentException() {
-        Block::getBlockedUsers(User::create([]), 1000, 0);
+        Block::getBlockedUsers(AuthenticatedUser::create([]), 1000, 0);
     }
 
     /**
@@ -80,9 +81,73 @@ class BlockTest extends BaseModelTest {
      */
     public function testGetBlockedUsersThrowsInsufficientScopeException() {
         $this->mockConfig();
-        Block::getBlockedUsers(User::create([]), 25, 0);
+        Block::getBlockedUsers(AuthenticatedUser::create([]), 25, 0);
     }
 
-    public function testBlockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
-    public function testUnblockUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
+    public function testBlockUser() {
+        $client = $this->mockClient();
+        $config = $this->mockConfig(["scopes" => [Scope::EditUserBlocks]]);
+
+        $user = $this->mockAuthUser();
+
+        $headers = [
+                "Client-ID" => $config->reveal()["ClientId"],
+                "Accept" => BaseModel::ACCEPT_HEADER,
+        ];
+
+        $mockedUser = $user->reveal();
+
+        $body = $this->blockJson;
+
+        $mockedResponse = $this->mockResponse($body, 200);
+
+        $url = BaseModel::BASE_URL . "/users/{$mockedUser->getUsername()}/blocks/test_user_troll";
+        $client->put($url, [], $headers, $mockedUser->getAuthToken())
+                ->shouldBeCalled()
+                ->willReturn($mockedResponse);
+
+        $block = Block::blockUser($user->reveal(), "test_user_troll");
+        $this->assertEquals("test_user_troll", $block->getBlockedUser()->getName());
+    }
+
+    /**
+     * @expectedException \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
+     */
+    public function testBlockUserThrowsInsufficientScopeException() {
+        $this->mockConfig();
+        Block::blockUser(AuthenticatedUser::create([]), "TargetUser");
+    }
+
+    public function testUnblockUser() {
+        $client = $this->mockClient();
+        $config = $this->mockConfig(["scopes" => [Scope::EditUserBlocks]]);
+
+        $user = $this->mockAuthUser();
+
+        $headers = [
+                "Client-ID" => $config->reveal()["ClientId"],
+                "Accept" => BaseModel::ACCEPT_HEADER,
+        ];
+
+        $mockedUser = $user->reveal();
+
+        $body = null;
+
+        $mockedResponse = $this->mockResponse($body, 204);
+
+        $url = BaseModel::BASE_URL . "/users/{$mockedUser->getUsername()}/blocks/test_user_troll";
+        $client->delete($url, [], $headers, $mockedUser->getAuthToken())
+                ->shouldBeCalled()
+                ->willReturn($mockedResponse);
+
+        $this->assertTrue(Block::unblockUser($user->reveal(), "test_user_troll"));
+    }
+
+    /**
+     * @expectedException \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
+     */
+    public function testUnblockUserThrowsInsufficientScopeException() {
+        $this->mockConfig();
+        Block::unblockUser(AuthenticatedUser::create([]), "TargetUser");
+    }
 }
