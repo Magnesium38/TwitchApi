@@ -18,25 +18,33 @@ class ClientTest extends PHPUnit_Framework_TestCase {
 
     public function testDelete() {
         $response = $this->client->delete("http://localhost:8000");
-        $body = json_decode($response->getBody(), true);
+        $contents = $response->getBody()->getContents();
+        $body = json_decode($contents, true);
+        var_dump($body);
         $this->assertEquals("DELETE", $body["method"]);
     }
 
     public function testGet() {
         $response = $this->client->get("http://localhost:8000");
-        $body = json_decode($response->getBody(), true);
+        $contents = $response->getBody()->getContents();
+        $body = json_decode($contents, true);
+        var_dump($body);
         $this->assertEquals("GET", $body["method"]);
     }
 
     public function testPost() {
         $response = $this->client->post("http://localhost:8000");
-        $body = json_decode($response->getBody(), true);
+        $contents = $response->getBody()->getContents();
+        $body = json_decode($contents, true);
+        var_dump($body);
         $this->assertEquals("POST", $body["method"]);
     }
 
     public function testPut() {
         $response = $this->client->put("http://localhost:8000");
-        $body = json_decode($response->getBody(), true);
+        $contents = $response->getBody()->getContents();
+        $body = json_decode($contents, true);
+        var_dump($body);
         $this->assertEquals("PUT", $body["method"]);
     }
 }
