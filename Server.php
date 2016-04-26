@@ -1,6 +1,5 @@
 <?php
 
-/*
 $array = [
     "method" => $_SERVER['REQUEST_METHOD'],
 ];
@@ -16,5 +15,5 @@ if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
 if (isset($_SERVER['HTTP_CLIENTID'])) {
     $array["clientid"] = $_SERVER['HTTP_CLIENTID'];
 }
-*/
-echo json_encode(["method" => $_SERVER['REQUEST_METHOD']]);//json_encode($array);
+
+echo json_encode($array);
