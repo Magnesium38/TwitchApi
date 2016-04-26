@@ -24,6 +24,8 @@ matrix:
       env: GUZZLE_VERSION=^6.0
     - php: nightly
       env: GUZZLE_VERSION=^6.0
+  allow_failures:
+    - hhvm
 
 notifications:
   email: false
