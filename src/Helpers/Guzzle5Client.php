@@ -1,11 +1,16 @@
 <?php namespace MagnesiumOxide\TwitchApi\Helpers;
 
+use GuzzleHttp\Client as GuzzleClient;
+
 class Guzzle5Client implements ClientInterface {
+    protected $client;
 
     /**
      * Guzzle5Client constructor.
+     * @param GuzzleClient $client
      */
-    public function __construct() {
+    public function __construct(GuzzleClient $client = null) {
+        $this->client = $client ?: new GuzzleClient(["http_errors" => false, "allow_redirects" => true]);
     }
 
     /**
@@ -16,7 +21,11 @@ class Guzzle5Client implements ClientInterface {
      * @return \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface
      */
     public function delete($url, array $query = [], array $headers = [], $authToken = null) {
-        // TODO: Implement delete() method.
+        $options = [];
+        $options["query"] = $query;
+        $options["headers"] = $headers;
+
+        return $this->client->delete($url, $options);
     }
 
     /**
@@ -27,7 +36,11 @@ class Guzzle5Client implements ClientInterface {
      * @return \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface
      */
     public function get($url, array $query = [], array $headers = [], $authToken = null) {
-        // TODO: Implement get() method.
+        $options = [];
+        $options["query"] = $query;
+        $options["headers"] = $headers;
+
+        return $this->client->get($url, $options);
     }
 
     /**
@@ -38,7 +51,11 @@ class Guzzle5Client implements ClientInterface {
      * @return \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface
      */
     public function post($url, array $parameters = [], array $headers = [], $authToken = null) {
-        // TODO: Implement post() method.
+        $options = [];
+        $options["body"] = $parameters;
+        $options["headers"] = $headers;
+
+        return $this->client->post($url, $options);
     }
 
     /**
@@ -49,6 +66,10 @@ class Guzzle5Client implements ClientInterface {
      * @return \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface
      */
     public function put($url, array $parameters = [], array $headers = [], $authToken = null) {
-        // TODO: Implement put() method.
+        $options = [];
+        $options["body"] = $parameters;
+        $options["headers"] = $headers;
+
+        return $this->client->put($url, $options);
     }
 }
