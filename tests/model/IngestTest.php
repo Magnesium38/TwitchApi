@@ -1,4 +1,4 @@
-<?php
+<?php namespace MagnesiumOxide\TwitchApi\Tests\Models;
 
 use MagnesiumOxide\TwitchApi\Model\Ingest;
 

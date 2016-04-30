@@ -1,4 +1,7 @@
-<?php use MagnesiumOxide\TwitchApi\ConfigRepository;
+<?php namespace MagnesiumOxide\TwitchApi\Tests;
+
+use MagnesiumOxide\TwitchApi\ConfigRepository;
+use PHPUnit_Framework_TestCase;
 
 class ConfigRepositoryTest extends PHPUnit_Framework_TestCase {
     private $config;

@@ -1,10 +1,11 @@
-<?php
+<?php namespace MagnesiumOxide\TwitchApi\Tests\Models;
 
 use GuzzleHttp\Client;
 use MagnesiumOxide\TwitchApi\ConfigRepository;
 use MagnesiumOxide\TwitchApi\Helpers\ClientInterface;
 use MagnesiumOxide\TwitchApi\Model\BaseModel;
 use MagnesiumOxide\TwitchApi\Model\AuthenticatedUser;
+use PHPUnit_Framework_TestCase;
 use Prophecy\Argument;
 
 abstract class BaseTest extends PHPUnit_Framework_TestCase {

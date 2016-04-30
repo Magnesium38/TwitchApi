@@ -1,4 +1,4 @@
-<?php
+<?php namespace MagnesiumOxide\TwitchApi\Tests\Models;
 
 use MagnesiumOxide\TwitchApi\Model\User;
 
@@ -7,9 +7,6 @@ class UserTest extends BaseTest {
     public function testGetUser() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testGetAuthenticationUrl() {
         $this->markTestIncomplete('This test has not been implemented yet.');
-
-        return;
-
         /*
         $config = [
                 "ClientId" => "MyClientId",

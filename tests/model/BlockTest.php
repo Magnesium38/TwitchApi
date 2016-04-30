@@ -1,5 +1,7 @@
-<?php
+<?php namespace MagnesiumOxide\TwitchApi\Tests\Models;
 
+use DateTime;
+use InvalidArgumentException;
 use MagnesiumOxide\TwitchApi\Model\AuthenticatedUser;
 use MagnesiumOxide\TwitchApi\Model\BaseModel;
 use MagnesiumOxide\TwitchApi\Model\Block;
@@ -30,7 +32,7 @@ class BlockTest extends BaseTest {
     }
 
     public function testGetBlockedUser() {
-        $this->assertTrue($this->block->getBlockedUser() instanceof \MagnesiumOxide\TwitchApi\Model\User);
+        $this->assertTrue($this->block->getBlockedUser() instanceof User);
     }
 
     public function testGetBlockedUsers() {
