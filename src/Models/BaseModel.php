@@ -145,6 +145,33 @@ abstract class BaseModel {
 
         return $headers;
     }
+
+
+    /**
+     * @param \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface $response
+     * @param $key
+     * @return array
+     */
+    protected static function responseToArray($response, $key) {
+        $body = json_decode($response->getBody(), true);
+
+        $objects = [];
+        foreach ($body[$key] as $item) {
+            $objects[] = static::create($item);
+        }
+
+        return $objects;
+    }
+
+    /**
+     * @param \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface $response
+     * @return static
+     */
+    protected static function responseToObject($response) {
+        $body = json_decode($response->getBody(), true);
+
+        return static::create($body);
+    }
 }
 
 if (version_compare(Client::VERSION, '6.0.0', '<')) {
