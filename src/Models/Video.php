@@ -60,4 +60,33 @@ class Video extends BaseModel {
     public function getChannelInfo() {
         return $this->getHelper("channel");
     }
+
+    public static function getVideo($id) {
+        $uri = self::buildUri("/videos/:id", ["id" => $id]);
+        $response = self::$client->get($uri);
+        return static::responseToObject($response);
+    }
+
+    public static function getTopVideos($limit = 10, $offset = 0, $game = null, $period = "week") {
+        if ($limit > 100) {
+            throw new \InvalidArgumentException("Limit cannot be greater than 100.");
+        }
+        if ($period != "week" && $period != "month" && $period != "all") {
+            throw new \InvalidArgumentException("Period must be either 'week', 'month' or 'all'.");
+        }
+
+        $query = [
+            "limit" => $limit,
+            "offset" => $offset,
+            "period" => $period,
+        ];
+
+        if ($game !== null) {
+            $query["game"] = $game;
+        }
+
+        $uri = self::buildUri("/videos/top");
+        $response = self::$client->get($uri, $query);
+        return self::responseToArray($response, "videos");
+    }
 }

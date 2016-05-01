@@ -42,6 +42,5 @@ class ChannelTest extends BaseTest {
     public function testUpdateChannel() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testResetStreamKey() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testRunCommercial() { $this->markTestIncomplete('This test has not been implemented yet.'); }
-    public function testGetTeamsFor() { $this->markTestIncomplete('This test has not been implemented yet.'); }
     public function testSearchChannels() { $this->markTestIncomplete('This test has not been implemented yet.'); }
 }

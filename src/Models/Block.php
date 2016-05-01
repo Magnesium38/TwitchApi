@@ -68,23 +68,15 @@ class Block extends BaseModel {
         ];
         $headers = self::buildHeaders();
 
-        $result = self::$client->get($uri, $query, $headers, $user->getAuthToken());
-
-        $body = json_decode($result->getBody(), true);
-
-        $blocks = [];
-        foreach ($body["blocks"] as $item) {
-            $blocks[] = static::create($item);
-        }
-
-        return $blocks;
+        $response = self::$client->get($uri, $query, $headers, $user->getAuthToken());
+        return static::responseToArray($response, "blocks");
     }
 
     /**
      * Adds $target to the authenticated user's block list. Returns a blocks object.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#put-usersuserblockstarget
      *
-     * @param User $user
+     * @param AuthenticatedUser|User $user
      * @param $target
      * @return Block
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
@@ -95,9 +87,8 @@ class Block extends BaseModel {
         $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
         $headers = self::buildHeaders();
         $response = self::$client->put($uri, [], $headers, $user->getAuthToken());
-        $body = json_decode($response->getBody(), true);
 
-        return static::create($body);
+        return static::responseToObject($response);
     }
 
     /**
@@ -105,7 +96,7 @@ class Block extends BaseModel {
      * Returns true on success, null on user wasn't blocked, and false on deleting the block failed.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#delete-usersuserblockstarget
      *
-     * @param User $user
+     * @param AuthenticatedUser|User $user
      * @param $target
      * @return bool|null
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
