@@ -48,11 +48,10 @@ class Block extends BaseModel {
      * Returns a list of block objects on the authenticated user's block list. Sorted by recency.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#get-usersuserblocks
      *
-     * @param User $user
+     * @param AuthenticatedUser|User $user
      * @param int $limit
      * @param int $offset
      * @return array
-     * @throws \InvalidArgumentException
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
      */
     public static function getBlockedUsers(AuthenticatedUser $user, $limit = 25, $offset = 0) {
@@ -75,7 +74,7 @@ class Block extends BaseModel {
 
         $blocks = [];
         foreach ($body["blocks"] as $item) {
-            $blocks[] = Block::create($item);
+            $blocks[] = static::create($item);
         }
 
         return $blocks;
@@ -98,7 +97,7 @@ class Block extends BaseModel {
         $response = self::$client->put($uri, [], $headers, $user->getAuthToken());
         $body = json_decode($response->getBody(), true);
 
-        return Block::create($body);
+        return static::create($body);
     }
 
     /**
