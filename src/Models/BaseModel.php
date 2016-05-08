@@ -1,7 +1,7 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
 use GuzzleHttp\Client;
-use MagnesiumOxide\TwitchApi\ConfigRepository;
+use MagnesiumOxide\Config\Repository as ConfigRepository;
 use MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException;
 use MagnesiumOxide\TwitchApi\Helpers\ClientInterface;
 use MagnesiumOxide\TwitchApi\Helpers\Guzzle5Client;

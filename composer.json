@@ -2,7 +2,7 @@
     "name": "magnesiumoxide/twitchapi",
     "description": "A wrapper built on top of the v3 Twitch API.",
     "minimum-stability": "dev",
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
             "name": "MagnesiumOxide",
@@ -23,7 +23,8 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "guzzlehttp/guzzle": "^5.3|^6.0"
+        "guzzlehttp/guzzle": "^5.3|^6.0",
+        "magnesiumoxide/config": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8"
