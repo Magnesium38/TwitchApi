@@ -165,10 +165,15 @@ abstract class BaseModel {
 
     /**
      * @param \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface $response
+     * @param null|string $key
      * @return static
      */
-    protected static function responseToObject($response) {
-        $body = json_decode($response->getBody(), true);
+    protected static function responseToObject($response, $key = null) {
+        if (is_null($key)) {
+            $body = json_decode($response->getBody(), true);
+        } else {
+            $body = json_decode($response->getBody(), true)[$key];
+        }
 
         return static::create($body);
     }
