@@ -7,7 +7,7 @@ class User extends BaseModel {
 
     public static function getUser($username) {
         $uri = self::buildUri("/users/:user", ["user" => $username]);
-        $response = self::$client->get($uri);
+        $response = self::get($uri);
 
         return new static(json_decode($response->getBody(), true));
     }
@@ -68,7 +68,7 @@ class User extends BaseModel {
         $this->requireScope(Scope::UserRead);
 
         $uri = self::buildUri("/user");
-        $response = self::$client->get($uri);
+        $response = self::get($uri);
 
         $this->loadObject(json_decode($response->getBody(), true));
     }

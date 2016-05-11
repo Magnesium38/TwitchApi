@@ -137,15 +137,50 @@ abstract class BaseModel {
         return self::BASE_URL . implode("/", $parts);
     }
 
-    protected static function buildHeaders() {
+    protected static function buildHeaders($authToken = null) {
         $headers = [
             "Client-ID" => self::$config["ClientId"],
             "Accept" => self::ACCEPT_HEADER,
         ];
 
+        if (!is_null($authToken)) {
+            $headers["Authorization"] = "OAuth " . $authToken;
+        }
+
         return $headers;
     }
 
+    protected static function delete($url, array $query = [], $authToken = null, array $headers = []) {
+        if (empty($headers)) {
+            $headers = self::buildHeaders($authToken);
+        }
+
+        return self::$client->delete($url, $query, $headers);
+    }
+
+    protected static function get($url, array $query = [], $authToken = null, array $headers = []) {
+        if (empty($headers)) {
+            $headers = self::buildHeaders($authToken);
+        }
+
+        return self::$client->get($url, $query, $headers);
+    }
+
+    protected static function post($url, array $parameters = [], $authToken = null, array $headers = []) {
+        if (empty($headers)) {
+            $headers = self::buildHeaders($authToken);
+        }
+
+        return self::$client->post($url, $parameters, $headers);
+    }
+
+    protected static function put($url, array $parameters = [], $authToken = null, array $headers = []) {
+        if (empty($headers)) {
+            $headers = self::buildHeaders($authToken);
+        }
+
+        return self::$client->put($url, $parameters, $headers);
+    }
 
     /**
      * @param \GuzzleHttp\Message\ResponseInterface|\Psr\Http\Message\ResponseInterface $response

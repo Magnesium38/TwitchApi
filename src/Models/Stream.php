@@ -54,8 +54,7 @@ class Stream extends BaseModel {
      */
     public static function getLiveChannel($channel) {
         $uri = self::buildUri("/streams/:channel", ["channel" => $channel]);
-        $headers = self::buildHeaders();
-        return self::responseToObject(self::$client->get($uri, [], $headers), "stream");
+        return self::responseToObject(self::get($uri), "stream");
     }
 
     /**
@@ -87,8 +86,7 @@ class Stream extends BaseModel {
         }
 
         $uri = self::buildUri("/streams");
-        $headers = self::buildHeaders();
-        return self::responseToArray(self::$client->get($uri, $query, $headers), "streams");
+        return self::responseToArray(self::get($uri, $query), "streams");
     }
 
     /**
@@ -100,12 +98,11 @@ class Stream extends BaseModel {
      */
     public static function getStreamSummary($game = null) {
         $uri = self::buildUri("/streams/summary");
-        $headers = self::buildHeaders();
 
         $query = [];
         if (!is_null($game)) $query["game"] = $game;
 
-        $result = json_decode(self::$client->get($uri, $query, $headers)->getBody(), true);
+        $result = json_decode(self::get($uri, $query)->getBody(), true);
         unset($result["_links"]); // Remove the self-referencing links. I don't see a reason to include it.
 
         return $result;
@@ -137,7 +134,6 @@ class Stream extends BaseModel {
         }
 
         $uri = self::buildUri("/search/streams");
-        $headers = self::buildHeaders();
-        return self::responseToArray(self::$client->get($uri, $q, $headers), "streams");
+        return self::responseToArray(self::get($uri, $q), "streams");
     }
 }

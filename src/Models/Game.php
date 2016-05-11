@@ -66,8 +66,7 @@ class Game extends BaseModel {
         ];
 
         $uri = self::buildUri("/games/top");
-        $headers = self::buildHeaders();
-        $result = json_decode(self::$client->get($uri, $query, $headers)->getBody(), true);
+        $result = json_decode(self::get($uri, $query)->getBody(), true);
 
         $games = [];
         foreach ($result["top"] as $gameArray) {
@@ -105,8 +104,7 @@ class Game extends BaseModel {
         }
 
         $uri = self::buildUri("/search/games");
-        $headers = self::buildHeaders();
-        $result = self::$client->get($uri, $q, $headers);
+        $result = self::get($uri, $q);
 
         if ($result->getStatusCode() == 503) {
             throw new \Exception();

@@ -39,8 +39,6 @@ class BlockTest extends BaseTest {
         $client = $this->mockClient();
         $config = $this->mockConfig(["scopes" => [Scope::ReadUserBlocks]]);
 
-        $user = $this->mockAuthUser();
-
         $limit = 25;
         $offset = 0;
 
@@ -49,23 +47,24 @@ class BlockTest extends BaseTest {
             "offset" => $offset,
         ];
 
+        $mockedUser = $this->mockAuthUser()->reveal();
+
         $headers = [
             "Client-ID" => $config->reveal()["ClientId"],
             "Accept" => BaseModel::ACCEPT_HEADER,
+            "Authorization" => "OAuth " . $mockedUser->getAuthToken(),
         ];
-
-        $mockedUser = $user->reveal();
 
         $body = '{"blocks":[' . $this->blockJson . ']}';
 
         $mockedResponse = $this->mockResponse($body, 200);
 
         $url = BaseModel::BASE_URL . "/users/{$mockedUser->getUsername()}/blocks";
-        $client->get($url, $query, $headers, $mockedUser->getAuthToken())
+        $client->get($url, $query, $headers)
             ->shouldBeCalled()
             ->willReturn($mockedResponse);
 
-        $blocks = Block::getBlockedUsers($user->reveal(), $limit, $offset);
+        $blocks = Block::getBlockedUsers($mockedUser, $limit, $offset);
 
         $this->assertEquals(1, count($blocks));
         $this->assertEquals("test_user_troll", $blocks[0]->getBlockedUser()->getName());
@@ -90,25 +89,24 @@ class BlockTest extends BaseTest {
         $client = $this->mockClient();
         $config = $this->mockConfig(["scopes" => [Scope::EditUserBlocks]]);
 
-        $user = $this->mockAuthUser();
+        $mockedUser = $this->mockAuthUser()->reveal();
 
         $headers = [
-                "Client-ID" => $config->reveal()["ClientId"],
-                "Accept" => BaseModel::ACCEPT_HEADER,
+            "Client-ID" => $config->reveal()["ClientId"],
+            "Accept" => BaseModel::ACCEPT_HEADER,
+            "Authorization" => "OAuth " . $mockedUser->getAuthToken(),
         ];
-
-        $mockedUser = $user->reveal();
 
         $body = $this->blockJson;
 
         $mockedResponse = $this->mockResponse($body, 200);
 
         $url = BaseModel::BASE_URL . "/users/{$mockedUser->getUsername()}/blocks/test_user_troll";
-        $client->put($url, [], $headers, $mockedUser->getAuthToken())
+        $client->put($url, [], $headers)
                 ->shouldBeCalled()
                 ->willReturn($mockedResponse);
 
-        $block = Block::blockUser($user->reveal(), "test_user_troll");
+        $block = Block::blockUser($mockedUser, "test_user_troll");
         $this->assertEquals("test_user_troll", $block->getBlockedUser()->getName());
     }
 
@@ -124,25 +122,24 @@ class BlockTest extends BaseTest {
         $client = $this->mockClient();
         $config = $this->mockConfig(["scopes" => [Scope::EditUserBlocks]]);
 
-        $user = $this->mockAuthUser();
+        $mockedUser = $this->mockAuthUser()->reveal();
 
         $headers = [
-                "Client-ID" => $config->reveal()["ClientId"],
-                "Accept" => BaseModel::ACCEPT_HEADER,
+            "Client-ID" => $config->reveal()["ClientId"],
+            "Accept" => BaseModel::ACCEPT_HEADER,
+            "Authorization" => "OAuth " . $mockedUser->getAuthToken(),
         ];
-
-        $mockedUser = $user->reveal();
 
         $body = null;
 
         $mockedResponse = $this->mockResponse($body, 204);
 
         $url = BaseModel::BASE_URL . "/users/{$mockedUser->getUsername()}/blocks/test_user_troll";
-        $client->delete($url, [], $headers, $mockedUser->getAuthToken())
+        $client->delete($url, [], $headers)
                 ->shouldBeCalled()
                 ->willReturn($mockedResponse);
 
-        $this->assertTrue(Block::unblockUser($user->reveal(), "test_user_troll"));
+        $this->assertTrue(Block::unblockUser($mockedUser, "test_user_troll"));
     }
 
     /**

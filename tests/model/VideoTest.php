@@ -2,7 +2,6 @@
 
 use MagnesiumOxide\TwitchApi\Model\BaseModel;
 use MagnesiumOxide\TwitchApi\Model\Video;
-use MagnesiumOxide\TwitchApi\Scope;
 use Prophecy\Exception\InvalidArgumentException;
 
 class VideoTest extends BaseTest {

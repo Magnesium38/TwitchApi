@@ -148,8 +148,7 @@ class Video extends BaseModel {
      */
     public static function getVideo($id) {
         $uri = self::buildUri("/videos/:id", ["id" => $id]);
-        $headers = self::buildHeaders();
-        $response = self::$client->get($uri, [], $headers);
+        $response = self::get($uri);
         return static::responseToObject($response);
     }
 
@@ -181,8 +180,7 @@ class Video extends BaseModel {
         }
 
         $uri = self::buildUri("/videos/top");
-        $headers = self::buildHeaders();
-        $response = self::$client->get($uri, $query, $headers);
+        $response = self::get($uri, $query);
         return self::responseToArray($response, "videos");
     }
 }

@@ -60,9 +60,7 @@ class Team extends BaseModel {
         ];
 
         $uri = self::buildUri("/teams");
-
-        $headers = self::buildHeaders();
-        $response = self::$client->get($uri, $query, $headers);
+        $response = self::get($uri, $query);
 
         return self::responseToArray($response, "teams");
     }
@@ -76,9 +74,8 @@ class Team extends BaseModel {
      */
     public static function getTeam($team) {
         $uri = self::buildUri("/teams/:team", ["team" => $team]);
-        $headers = self::buildHeaders();
 
-        $response = self::$client->get($uri, [], $headers);
+        $response = self::get($uri);
         $body = json_decode($response->getBody(), true);
 
         return static::create($body);
@@ -93,9 +90,8 @@ class Team extends BaseModel {
      */
     public static function getTeamsFor($channel) {
         $uri = self::buildUri("/channels/:channel/teams", ["channel" => $channel]);
-        $headers = self::buildHeaders();
 
-        $response = self::$client->get($uri, [], $headers);
+        $response = self::get($uri);
         return static::responseToArray($response, "teams");
     }
 }

@@ -66,9 +66,8 @@ class Block extends BaseModel {
             "limit" => $limit,
             "offset" => $offset,
         ];
-        $headers = self::buildHeaders();
 
-        $response = self::$client->get($uri, $query, $headers, $user->getAuthToken());
+        $response = self::get($uri, $query, $user->getAuthToken());
         return static::responseToArray($response, "blocks");
     }
 
@@ -85,8 +84,7 @@ class Block extends BaseModel {
         self::requireScope(Scope::EditUserBlocks);
 
         $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
-        $headers = self::buildHeaders();
-        $response = self::$client->put($uri, [], $headers, $user->getAuthToken());
+        $response = self::put($uri, [], $user->getAuthToken());
 
         return static::responseToObject($response);
     }
@@ -105,8 +103,7 @@ class Block extends BaseModel {
         self::requireScope(Scope::EditUserBlocks);
 
         $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
-        $headers = self::buildHeaders();
-        $result = self::$client->delete($uri, [], $headers, $user->getAuthToken())->getStatusCode();
+        $result = self::delete($uri, [], $user->getAuthToken())->getStatusCode();
 
         if ($result == 204) {
             return true;

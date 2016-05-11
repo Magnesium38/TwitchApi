@@ -13,7 +13,7 @@ class AuthenticatedUser extends User {
                 "state" => self::$config["State"],
         ];
 
-        $response = self::$client->post(self::BASE_URL . "/oauth2/token", $params);
+        $response = self::post(self::buildUri("/oauth2/token"), $params);
 
         if ($response->getStatusCode() != 200) {
             // ALL OF THIS NEEDS TESTING.
@@ -32,10 +32,10 @@ class AuthenticatedUser extends User {
             $user->setAuthToken($token);
             $user->loadUserInfo();
         } else {
-            $response = self::$client->get(self::BASE_URL, [], [], $token);
-            $response = $response->getBody();
+            $response = self::get(self::buildUri(""), [], [], $token);
+            $body = $response->getBody();
 
-            $username = $response["token"]["user_name"];
+            $username = $body["token"]["user_name"];
 
             $user = self::getUser($username);
             $user->setAuthToken($token);

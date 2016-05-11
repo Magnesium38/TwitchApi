@@ -44,7 +44,6 @@ class FeaturedStream extends BaseModel {
         ];
 
         $uri = self::buildUri("/streams/featured");
-        $headers = self::buildHeaders();
-        return self::responseToArray(self::$client->get($uri, $query, $headers), "featured");
+        return self::responseToArray(self::get($uri, $query), "featured");
     }
 }
