@@ -24,10 +24,9 @@ class Guzzle6Client implements ClientInterface {
      * @param $url
      * @param array $query
      * @param array $headers
-     * @param null $authToken
      * @return ResponseInterface
      */
-    public function delete($url, array $query = [], array $headers = [], $authToken = null) {
+    public function delete($url, array $query = [], array $headers = []) {
         $options = [];
         $options["query"] = $query;
         $options["headers"] = $headers;
@@ -39,10 +38,9 @@ class Guzzle6Client implements ClientInterface {
      * @param $url
      * @param array $query
      * @param array $headers
-     * @param null $authToken
      * @return ResponseInterface
      */
-    public function get($url, array $query = [], array $headers = [], $authToken = null) {
+    public function get($url, array $query = [], array $headers = []) {
         $options = [];
         $options["query"] = $query;
         $options["headers"] = $headers;
@@ -54,10 +52,9 @@ class Guzzle6Client implements ClientInterface {
      * @param $url
      * @param array $parameters
      * @param array $headers
-     * @param null $authToken
      * @return ResponseInterface
      */
-    public function post($url, array $parameters = [], array $headers = [], $authToken = null) {
+    public function post($url, array $parameters = [], array $headers = []) {
         $options = [];
         $options["form_params"] = $parameters;
         $options["headers"] = $headers;
@@ -69,10 +66,9 @@ class Guzzle6Client implements ClientInterface {
      * @param $url
      * @param array $parameters
      * @param array $headers
-     * @param null $authToken
      * @return ResponseInterface
      */
-    public function put($url, array $parameters = [], array $headers = [], $authToken = null) {
+    public function put($url, array $parameters = [], array $headers = []) {
         $options = [];
         $options["form_params"] = $parameters;
         $options["headers"] = $headers;
