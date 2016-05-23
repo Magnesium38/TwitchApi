@@ -49,11 +49,23 @@ class Channel extends BaseModel {
     }
 
     public function getCreatedAt() {
-        return new \DateTime($this->getHelper("created_at"));
+        $datetime = $this->getHelper("created_at");
+
+        if (is_null($datetime)) {
+            return null;
+        }
+
+        return new \DateTime($datetime);
     }
 
-    public function lastUpdatedAt() {
-        return new \DateTime($this->getHelper("updated_at"));
+    public function getLastUpdatedAt() {
+        $datetime = $this->getHelper("updated_at");
+
+        if (is_null($datetime)) {
+            return null;
+        }
+
+        return new \DateTime($datetime);
     }
 
     public function getLogo() {
@@ -104,5 +116,41 @@ class Channel extends BaseModel {
      */
     protected function getLinks() {
         return $this->getHelper("_links");
+    }
+
+    /**
+     * Returns a channel object.
+     * https://github.com/justintv/Twitch-API/blob/master/v3_resources/channels.md#get-channelschannel
+     *
+     * @param $channel
+     * @return Channel
+     */
+    public static function getChannel($channel) {
+        $uri = self::buildUri("/channels/:channel", ["channel" => $channel]);
+        return static::responseToObject(self::get($uri));
+    }
+
+    /**
+     * Returns a list of channel objects matching the search query.
+     * https://github.com/justintv/Twitch-API/blob/master/v3_resources/search.md#get-searchchannels
+     *
+     * @param $query
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public static function searchChannels($query, $limit = 25, $offset = 0) {
+        if ($limit > 100) {
+            throw new \InvalidArgumentException("Limit cannot be greater than 100.");
+        }
+
+        $q = [
+                "query" => urlencode($query),
+                "limit" => $limit,
+                "offset" => $offset,
+        ];
+
+        $uri = self::buildUri("/search/channels");
+        return static::responseToArray(self::get($uri, $q), "channels");
     }
 }

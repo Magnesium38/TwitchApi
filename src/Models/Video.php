@@ -183,4 +183,31 @@ class Video extends BaseModel {
         $response = self::get($uri, $query);
         return self::responseToArray($response, "videos");
     }
+
+    /**
+     * Returns a list of videos ordered by creation time from $channel.
+     * https://github.com/justintv/Twitch-API/blob/master/v3_resources/videos.md#get-channelschannelvideos
+     *
+     * @param $channel
+     * @param int $limit
+     * @param int $offset
+     * @param bool|false $broadcasts
+     * @param bool|false $hls
+     * @return array
+     */
+    public static function getChannelVideos($channel, $limit = 10, $offset = 0, $broadcasts = false, $hls = false) {
+        if ($limit > 100) {
+            throw new \InvalidArgumentException("Limit cannot be greater than 100.");
+        }
+
+        $query = [
+                "limit" => $limit,
+                "offset" => $offset,
+                "broadcasts" => $broadcasts,
+                "hls" => $hls,
+        ];
+
+        $uri = self::buildUri("/channels/:channel/videos", ["channel" => $channel]);
+        return self::responseToArray(self::get($uri, $query), "videos");
+    }
 }

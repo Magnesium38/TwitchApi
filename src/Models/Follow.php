@@ -60,6 +60,36 @@ class Follow extends BaseModel {
     }
 
     /**
+     * Returns a list of follow objects.
+     * https://github.com/justintv/Twitch-API/blob/master/v3_resources/follows.md#get-channelschannelfollows
+     *
+     * @param $channel
+     * @param $limit
+     * @param null $cursor
+     * @param string $direction
+     * @return array
+     */
+    public static function getChannelFollowers($channel, $limit = 25, $cursor = null, $direction = "desc") {
+        if ($direction != "desc" && $direction != "asc") {
+            throw new \InvalidArgumentException("Direction must be either 'asc' or 'desc'.");
+        }
+        if ($limit > 100) {
+            throw new \InvalidArgumentException("Limit cannot be greater than 100.");
+        }
+        $query = [
+                "limit" => $limit,
+                "direction" => $direction,
+        ];
+
+        if ($cursor !== null) {
+            $query["cursor"] = $cursor;
+        }
+
+        $uri = self::buildUri("/channels/:channel/follows", ["channel" => $channel]);
+        return self::responseToArray(self::get($uri, $query), "follows");
+    }
+
+    /**
      * Returns a list of follows objects.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/follows.md#get-usersuserfollowschannels
      *
@@ -70,7 +100,7 @@ class Follow extends BaseModel {
      * @param string $sort
      * @return array
      */
-    public static function getFollowers($user, $limit = 25, $offset = 0, $direction = "desc", $sort = "created_at") {
+    public static function getUserFollowers($user, $limit = 25, $offset = 0, $direction = "desc", $sort = "created_at") {
         if ($direction != "desc" && $direction != "asc") {
             throw new \InvalidArgumentException("Direction must be either 'asc' or 'desc'.");
         }

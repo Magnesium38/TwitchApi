@@ -7,6 +7,7 @@ class FollowTest extends BaseTest {
     /** @var Follow */
     private $follow;
     private $followJson;
+    private $channelFollowJson;
     protected $class = Follow::class;
     private $user = "test_user1";
     private $channel = "test_channel";
@@ -36,6 +37,14 @@ class FollowTest extends BaseTest {
         $followArray = json_decode($followJson, true);
 
         $this->followJson = $followJson;
+
+        $this->channelFollowJson = '{"created_at":"2013-06-02T09:38:45Z","_links":{"self":'
+            . '"https://api.twitch.tv/kraken/users/test_user2/follows/channels/test_user1"},'
+            . '"notifications":true,"user":{"_links":{"self":"https://api.twitch.tv/kraken/'
+            . 'users/test_user2"},"type":"user","bio":"test user\'s bio","logo":null,'
+            . '"display_name":"test_user2","created_at":"2013-02-06T21:21:57Z","updated_at":'
+            . '"2013-02-13T20:59:42Z","_id":40091581,"name":"test_user2"}}';
+
         $this->follow = Follow::create($followArray);
     }
 
@@ -55,7 +64,7 @@ class FollowTest extends BaseTest {
         $this->assertEquals("test_channel", $this->follow->getChannel()->getDisplayName());
     }
 
-    public function testGetFollowers() {
+    public function testGetUserFollowers() {
         $client = $this->mockClient();
         $config = $this->mockConfig();
 
@@ -80,7 +89,7 @@ class FollowTest extends BaseTest {
                 ->shouldBeCalled()
                 ->willReturn($mockedResponse);
 
-        $this->assertTrue(Follow::getFollowers($this->user)[0]->getNotificationStatus());
+        $this->assertTrue(Follow::getUserFollowers($this->user)[0]->getNotificationStatus());
     }
 
     public function testDoesUserFollowChannel() {
@@ -119,5 +128,33 @@ class FollowTest extends BaseTest {
                 ->willReturn($mockedResponse);
 
         $this->assertNull(Follow::doesUserFollowChannel($this->user, $this->channel));
+    }
+
+    public function testGetChannelFollowers() {
+        $client = $this->mockClient();
+        $config = $this->mockConfig();
+
+        $headers = [
+                "Client-ID" => $config->reveal()["ClientId"],
+                "Accept" => BaseModel::ACCEPT_HEADER,
+        ];
+
+        $channel = "test_user1";
+
+        $query = [
+            "limit" => 25,
+            "direction" => "desc",
+        ];
+
+        $body = '{"follows":[' . $this->channelFollowJson . ']}';
+
+        $mockedResponse = $this->mockResponse($body, 200);
+
+        $url = BaseModel::BASE_URL . "/channels/{$channel}/follows";
+        $client->get($url, $query, $headers)
+                ->shouldBeCalled()
+                ->willReturn($mockedResponse);
+
+        $this->assertTrue(Follow::getChannelFollowers($channel)[0]->getNotificationStatus());
     }
 }

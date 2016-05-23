@@ -144,4 +144,34 @@ class VideoTest extends BaseTest {
     public function testGetTopVideosThrowsExceptionOnInvalidPeriod() {
         Video::getTopVideos(10, 0, null, "fortnight");
     }
+
+    public function testGetChannelVideos() {
+        $client = $this->mockClient();
+        $config = $this->mockConfig();
+
+        $headers = [
+                "Client-ID" => $config->reveal()["ClientId"],
+                "Accept" => BaseModel::ACCEPT_HEADER,
+        ];
+
+        $channel = "twitch";
+
+        $query = [
+            "limit" => 10,
+            "offset" => 0,
+            "broadcasts" => false,
+            "hls" => false,
+        ];
+
+        $body = '{"videos":[' . $this->videoJson . ']}';
+
+        $mockedResponse = $this->mockResponse($body, 200);
+
+        $url = BaseModel::BASE_URL . "/channels/{$channel}/videos";
+        $client->get($url, $query, $headers)
+                ->shouldBeCalled()
+                ->willReturn($mockedResponse);
+
+        $this->assertEquals("c6055863", Video::getChannelVideos($channel)[0]->getId());
+    }
 }
