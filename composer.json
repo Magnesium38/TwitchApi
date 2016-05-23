@@ -18,6 +18,7 @@
     "autoload-dev": {
         "psr-4": {
             "MagnesiumOxide\\TwitchApi\\Tests\\": "tests",
+            "MagnesiumOxide\\TwitchApi\\Tests\\Live\\": "tests/live",
             "MagnesiumOxide\\TwitchApi\\Tests\\Models\\": "tests/model"
         }
     },
