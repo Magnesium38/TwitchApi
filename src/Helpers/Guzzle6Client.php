@@ -17,7 +17,12 @@ class Guzzle6Client implements ClientInterface {
      * @param GuzzleClient|null $client
      */
     public function __construct(GuzzleClient $client = null) {
-        $this->client = $client ?: new GuzzleClient(["http_errors" => false, "allow_redirects" => true]);
+        $defaults = [
+            "http_errors" => false,
+            "allow_redirects" => true,
+            //"verify" => false, // this fixes cURL error 60.
+        ];
+        $this->client = $client ?: new GuzzleClient($defaults);
     }
 
     /**

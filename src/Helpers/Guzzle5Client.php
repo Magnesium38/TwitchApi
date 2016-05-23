@@ -10,7 +10,11 @@ class Guzzle5Client implements ClientInterface {
      * @param GuzzleClient $client
      */
     public function __construct(GuzzleClient $client = null) {
-        $defaults = ["exceptions" => false, "allow_redirects" => true];
+        $defaults = [
+            "exceptions" => false,
+            "allow_redirects" => true,
+            //"verify" => false, // this fixes cURL error 60.
+        ];
         $this->client = $client ?: new GuzzleClient(["defaults" => $defaults]);
     }
 
