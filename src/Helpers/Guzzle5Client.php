@@ -10,7 +10,7 @@ class Guzzle5Client implements ClientInterface {
      * @param GuzzleClient $client
      */
     public function __construct(GuzzleClient $client = null) {
-        $this->client = $client ?: new GuzzleClient(["http_errors" => false, "allow_redirects" => true]);
+        $this->client = $client ?: new GuzzleClient(["exceptions" => false, "allow_redirects" => true]);
     }
 
     /**
