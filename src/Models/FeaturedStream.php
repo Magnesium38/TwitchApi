@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class FeaturedStream extends BaseModel {
+class FeaturedStream extends CreatableModel {
     public function getImage() {
         return $this->getHelper("image");
     }

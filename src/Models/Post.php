@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Post extends BaseModel {
+class Post extends CreatableModel {
     public function getId() {
         return $this->getHelper("id");
     }

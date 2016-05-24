@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Ingest extends BaseModel {
+class Ingest extends CreatableModel {
     public function getName() {
         return $this->getHelper("name");
     }

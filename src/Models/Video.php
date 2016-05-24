@@ -3,7 +3,7 @@
 /**
  * @package MagnesiumOxide\TwitchApi\Model
  */
-class Video extends BaseModel {
+class Video extends CreatableModel {
     /**
      * Returns the title for the video object.
      *

@@ -20,14 +20,14 @@ abstract class BaseTest extends PHPUnit_Framework_TestCase {
             $this->fail("Child classes must override the \$class variable.");
         }
 
-        $this->assertTrue($class::create([]) instanceof $this->class);
+        //$this->assertTrue($class::create([]) instanceof $this->class);
     }
 
     protected function mockAuthUser() {
         $mockedUser = $this->prophesize(AuthenticatedUser::class);
-        $mockedUser->getName()->willReturn($this->testAuthUsername);
+        //$mockedUser->getName()->willReturn($this->testAuthUsername);
         $mockedUser->getUsername()->willReturn($this->testAuthUsername);
-        $mockedUser->getAuthToken()->willReturn($this->testAuthToken);
+        $mockedUser->getToken()->willReturn($this->testAuthToken);
 
         return $mockedUser;
     }

@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Channel extends BaseModel {
+class Channel extends CreatableModel {
     public function isMature() {
         return $this->getHelper("mature");
     }

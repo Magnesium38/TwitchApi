@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Subscription extends BaseModel {
+class Subscription extends CreatableModel {
     /**
      * Returns the internal id.
      *

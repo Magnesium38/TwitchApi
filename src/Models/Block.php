@@ -5,7 +5,7 @@ use MagnesiumOxide\TwitchApi\Scope;
 /**
  * @package MagnesiumOxide\TwitchApi\Model
  */
-class Block extends BaseModel {
+class Block extends CreatableModel {
     /**
      * Returns the self-referencing links provided by the API.
      * I don't see a reason to expose this method. Leaving protected in case there's a niche use case.
@@ -48,7 +48,7 @@ class Block extends BaseModel {
      * Returns a list of block objects on the authenticated user's block list. Sorted by recency.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#get-usersuserblocks
      *
-     * @param AuthenticatedUser|User $user
+     * @param AuthenticatedUser $user
      * @param int $limit
      * @param int $offset
      * @return array
@@ -61,13 +61,13 @@ class Block extends BaseModel {
             throw new \InvalidArgumentException("Limit cannot be greater than 100.");
         }
 
-        $uri = self::buildUri("/users/:user/blocks", ["user" => $user->getName()]);
+        $uri = self::buildUri("/users/:user/blocks", ["user" => $user->getUsername()]);
         $query = [
             "limit" => $limit,
             "offset" => $offset,
         ];
 
-        $response = self::get($uri, $query, $user->getAuthToken());
+        $response = self::get($uri, $query, $user->getToken());
         return static::responseToArray($response, "blocks");
     }
 
@@ -75,7 +75,7 @@ class Block extends BaseModel {
      * Adds $target to the authenticated user's block list. Returns a blocks object.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#put-usersuserblockstarget
      *
-     * @param AuthenticatedUser|User $user
+     * @param AuthenticatedUser $user
      * @param $target
      * @return Block
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
@@ -83,8 +83,8 @@ class Block extends BaseModel {
     public static function blockUser(AuthenticatedUser $user, $target) {
         self::requireScope(Scope::EditUserBlocks);
 
-        $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
-        $response = self::put($uri, [], $user->getAuthToken());
+        $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getUsername(), "target" => $target]);
+        $response = self::put($uri, [], $user->getToken());
 
         return static::responseToObject($response);
     }
@@ -94,7 +94,7 @@ class Block extends BaseModel {
      * Returns true on success, null on user wasn't blocked, and false on deleting the block failed.
      * https://github.com/justintv/Twitch-API/blob/master/v3_resources/blocks.md#delete-usersuserblockstarget
      *
-     * @param AuthenticatedUser|User $user
+     * @param AuthenticatedUser $user
      * @param $target
      * @return bool|null
      * @throws \MagnesiumOxide\TwitchApi\Exception\InsufficientScopeException
@@ -102,8 +102,8 @@ class Block extends BaseModel {
     public static function unblockUser(AuthenticatedUser $user, $target) {
         self::requireScope(Scope::EditUserBlocks);
 
-        $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getName(), "target" => $target]);
-        $result = self::delete($uri, [], $user->getAuthToken())->getStatusCode();
+        $uri = self::buildUri("/users/:user/blocks/:target", ["user" => $user->getUsername(), "target" => $target]);
+        $result = self::delete($uri, [], $user->getToken())->getStatusCode();
 
         if ($result == 204) {
             return true;

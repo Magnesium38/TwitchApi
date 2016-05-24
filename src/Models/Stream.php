@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Stream extends BaseModel {
+class Stream extends CreatableModel {
     public function getGame() {
         return $this->getHelper("game");
     }

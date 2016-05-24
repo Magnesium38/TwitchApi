@@ -2,14 +2,12 @@
 
 use MagnesiumOxide\TwitchApi\Scope;
 
-class User extends BaseModel {
-    protected $authToken = null;
-
+class User extends CreatableModel {
     public static function getUser($username) {
         $uri = self::buildUri("/users/:user", ["user" => $username]);
         $response = self::get($uri);
 
-        return new static(json_decode($response->getBody(), true));
+        return self::responseToObject($response);
     }
 
     public function getType() {
@@ -48,20 +46,8 @@ class User extends BaseModel {
         return $this->getHelper("display_name");
     }
 
-    public function getEmail() {
-        return $this->getHelper("email");
-    }
-
-    public function getPartneredStatus() {
-        return $this->getHelper("partnered");
-    }
-
     public function getBio() {
         return $this->getHelper("bio");
-    }
-
-    public function getNotificationStatus() {
-        return $this->getHelper("notifications");
     }
 
     protected function loadUserInfo() {

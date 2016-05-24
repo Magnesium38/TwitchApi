@@ -2,7 +2,7 @@
 
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-class Game extends BaseModel {
+class Game extends CreatableModel {
     protected $numViewers = null;
     protected $numChannels = null;
 

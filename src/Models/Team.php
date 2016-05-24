@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Team extends BaseModel {
+class Team extends CreatableModel {
     public function getInfo() {
         return $this->getHelper("info");
     }

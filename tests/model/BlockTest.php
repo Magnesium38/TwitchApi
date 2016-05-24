@@ -52,7 +52,7 @@ class BlockTest extends BaseTest {
         $headers = [
             "Client-ID" => $config->reveal()["ClientId"],
             "Accept" => BaseModel::ACCEPT_HEADER,
-            "Authorization" => "OAuth " . $mockedUser->getAuthToken(),
+            "Authorization" => "OAuth " . $mockedUser->getToken(),
         ];
 
         $body = '{"blocks":[' . $this->blockJson . ']}';
@@ -74,7 +74,7 @@ class BlockTest extends BaseTest {
      * @expectedException InvalidArgumentException
      */
     public function testGetBlockedUsersThrowsInvalidArgumentException() {
-        Block::getBlockedUsers(AuthenticatedUser::create([]), 1000, 0);
+        Block::getBlockedUsers($this->mockAuthUser()->reveal(), 1000, 0);
     }
 
     /**
@@ -82,7 +82,7 @@ class BlockTest extends BaseTest {
      */
     public function testGetBlockedUsersThrowsInsufficientScopeException() {
         $this->mockConfig();
-        Block::getBlockedUsers(AuthenticatedUser::create([]), 25, 0);
+        Block::getBlockedUsers($this->mockAuthUser()->reveal(), 25, 0);
     }
 
     public function testBlockUser() {
@@ -94,7 +94,7 @@ class BlockTest extends BaseTest {
         $headers = [
             "Client-ID" => $config->reveal()["ClientId"],
             "Accept" => BaseModel::ACCEPT_HEADER,
-            "Authorization" => "OAuth " . $mockedUser->getAuthToken(),
+            "Authorization" => "OAuth " . $mockedUser->getToken(),
         ];
 
         $body = $this->blockJson;
@@ -115,7 +115,7 @@ class BlockTest extends BaseTest {
      */
     public function testBlockUserThrowsInsufficientScopeException() {
         $this->mockConfig();
-        Block::blockUser(AuthenticatedUser::create([]), "TargetUser");
+        Block::blockUser($this->mockAuthUser()->reveal(), "TargetUser");
     }
 
     public function testUnblockUser() {
@@ -127,7 +127,7 @@ class BlockTest extends BaseTest {
         $headers = [
             "Client-ID" => $config->reveal()["ClientId"],
             "Accept" => BaseModel::ACCEPT_HEADER,
-            "Authorization" => "OAuth " . $mockedUser->getAuthToken(),
+            "Authorization" => "OAuth " . $mockedUser->getToken(),
         ];
 
         $body = null;
@@ -147,6 +147,6 @@ class BlockTest extends BaseTest {
      */
     public function testUnblockUserThrowsInsufficientScopeException() {
         $this->mockConfig();
-        Block::unblockUser(AuthenticatedUser::create([]), "TargetUser");
+        Block::unblockUser($this->mockAuthUser()->reveal(), "TargetUser");
     }
 }

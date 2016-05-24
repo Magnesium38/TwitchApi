@@ -1,6 +1,6 @@
 <?php namespace MagnesiumOxide\TwitchApi\Model;
 
-class Follow extends BaseModel {
+class Follow extends CreatableModel {
     /**
      * Returns a DateTime representing when the follow occurred.
      *
